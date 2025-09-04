@@ -46,6 +46,16 @@ Tray & badge | About
 - Windows 11 **build 22000+** (21H2 or newer).  
 - x64 system.
 
+### ⚠️ Code signing & SmartScreen ⚠️
+
+The installer and executable are **not code-signed yet**. On first run, Windows SmartScreen may warn that the app is from an unknown publisher.
+
+If that happens:
+1. Click **More info**  
+2. Click **Run anyway**
+
+We plan to sign future releases. Until then, you can verify the download by checking the attached **SHA-256 checksum** and by downloading only from this GitHub repository.
+
 ---
 
 ## Usage 🧭
