@@ -60,17 +60,28 @@ We plan to sign future releases. Until then, you can verify the download by chec
 
 ## Usage 🧭
 
--   Right-click the tray icon for the menu (About, Exit, Position, etc.).
--   When a new version is available:
-    -   the tray icon shows a red badge;
-    -   the tray menu displays **“Update available”** (bold). Click to open the latest release.
-
+### Open the flyout (normal)
+- Click the **time/date** area on the Windows taskbar (the built-in tray clock).
+- The Windows calendar opens and **Win11 Extra Clock** appears alongside it (seconds + long date).
+- Close it by clicking the time/date again or anywhere outside the flyout.
 
 ### Test mode (no calendar needed)
-Open the tray menu → **Show Test**
-This shows the clock flyout without the Windows calendar, so you can position and preview it. 
-The **Custom move...** become active only when the position is set to **Custom** and the **Show Test** is active.
-Close it by uncheck it from tray menu.
+- Open the tray menu → **Show Test**
+- This shows the clock flyout without the Windows calendar, so you can position it anywhere you want and preview it. 
+- The **Custom move...** become active only when the position is set to **Custom** and the **Show Test** is active.
+- Close it by uncheck it from tray menu.
+
+### Tray icon & updates
+- Click the app’s tray icon to open the menu (About, Exit, Position…).
+- When a new version is out, the tray icon shows a small red badge and the menu displays **Update available** (bold).  
+  Click it to open the latest release.
+
+### Position presets
+- Tray menu → **Position** → choose **Top-Left / Top-Right / Bottom-Left / Bottom-Right / etc.**, or **Custom** to fine-tune offsets.
+
+### Start with Windows (selected during setup)
+- The option **Start with Windows** is already checked in the installer, the app launches automatically on sign-in.  
+  You can toggle this later from the Start-up folder or by reinstalling and changing the option.  
 
 ---
 
