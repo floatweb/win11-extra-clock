@@ -1,0 +1,190 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net8.0-windows10.0.26100.0</TargetFramework>
+		<UseWPF>true</UseWPF>
+		<UseWindowsForms>true</UseWindowsForms>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<SupportedOSPlatformVersion>10.0.22000.0</SupportedOSPlatformVersion>
+		<Version>1.0.0</Version>
+		<AssemblyVersion>1.0.0.0</AssemblyVersion>
+		<FileVersion>1.0.0.0</FileVersion>
+		<Company>Float Web</Company>
+		<Product>Win11 Extra Clock</Product>
+		<Copyright>© 2025 Float Web</Copyright>
+		<Authors>Float Web</Authors>
+		<ApplicationIcon>assets\win11_extra_clock_icon.ico</ApplicationIcon>
+	</PropertyGroup>
+	<ItemGroup>
+		<None Include="languages\**\*.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+	<ItemGroup>
+	  <None Remove="assets\bmc.png" />
+	  <None Remove="assets\extra-clock-dark.ico" />
+	  <None Remove="assets\extra-clock-glyph-dark.ico" />
+	  <None Remove="assets\extra-clock-glyph-light.ico" />
+	  <None Remove="assets\extra-clock-light.ico" />
+	  <None Remove="assets\github_dark.png" />
+	  <None Remove="assets\github_light.png" />
+	  <None Remove="assets\win11_extra_clock_logo.png" />
+	  <None Remove="assets\win11_extra_clock_logo_02.png" />
+	  <None Remove="assets\win11_extra_clock_logo_round.png" />
+	  <None Remove="languages\ar.json" />
+	  <None Remove="languages\bg-BG.json" />
+	  <None Remove="languages\da-DK.json" />
+	  <None Remove="languages\de-DE.json" />
+	  <None Remove="languages\en-GB.json" />
+	  <None Remove="languages\en-US.json" />
+	  <None Remove="languages\es-419.json" />
+	  <None Remove="languages\es-ES.json" />
+	  <None Remove="languages\fi-FI.json" />
+	  <None Remove="languages\fr-FR.json" />
+	  <None Remove="languages\hi-IN.json" />
+	  <None Remove="languages\hu-HU.json" />
+	  <None Remove="languages\id-ID.json" />
+	  <None Remove="languages\it-IT.json" />
+	  <None Remove="languages\ja-JP.json" />
+	  <None Remove="languages\ko-KR.json" />
+	  <None Remove="languages\nb-NO.json" />
+	  <None Remove="languages\pl-PL.json" />
+	  <None Remove="languages\pt-BR.json" />
+	  <None Remove="languages\pt-PT.json" />
+	  <None Remove="languages\ro-RO.json" />
+	  <None Remove="languages\ru-RU.json" />
+	  <None Remove="languages\sv-SE.json" />
+	  <None Remove="languages\tr-TR.json" />
+	  <None Remove="languages\vi-VN.json" />
+	  <None Remove="languages\zh-CN.json" />
+	  <None Remove="languages\zh-TW.json" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Content Include="assets\bmc.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="assets\win11_extra_clock_logo_02.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Resource Include="assets\extra-clock-dark.ico" />
+	  <Resource Include="assets\extra-clock-glyph-dark.ico">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </Resource>
+	  <Resource Include="assets\extra-clock-glyph-light.ico">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </Resource>
+	  <Resource Include="assets\extra-clock-light.ico" />
+	  <Content Include="assets\github_dark.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="assets\github_light.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="assets\win11_extra_clock_logo.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="assets\win11_extra_clock_logo_round.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="languages\ar.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="languages\bg-BG.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="languages\da-DK.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="languages\de-DE.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="languages\en-GB.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="languages\en-US.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="languages\es-419.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="languages\es-ES.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="languages\fi-FI.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="languages\fr-FR.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="languages\hi-IN.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="languages\hu-HU.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="languages\id-ID.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="languages\it-IT.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="languages\ja-JP.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="languages\ko-KR.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="languages\nb-NO.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="languages\pl-PL.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="languages\pt-BR.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="languages\pt-PT.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="languages\ro-RO.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="languages\ru-RU.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="languages\sv-SE.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="languages\tr-TR.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="languages\vi-VN.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="languages\zh-CN.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="languages\zh-TW.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.26100.4948" />
+		<PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Compile Update="Settings.Designer.cs">
+	    <DesignTimeSharedInput>True</DesignTimeSharedInput>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>Settings.settings</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+	<ItemGroup>
+	  <None Update="Settings.settings">
+	    <Generator>SettingsSingleFileGenerator</Generator>
+	    <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+	  </None>
+	</ItemGroup>
+</Project>

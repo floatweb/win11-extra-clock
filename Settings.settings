@@ -1,0 +1,18 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Win11_Extra_Clock" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="Position" Type="System.String" Scope="User">
+      <Value Profile="(Default)">BottomCenter</Value>
+    </Setting>
+    <Setting Name="CustomX" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="CustomY" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="Language" Type="System.String" Scope="User">
+      <Value Profile="(Default)">auto</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
