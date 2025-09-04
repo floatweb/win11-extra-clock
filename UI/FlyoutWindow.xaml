@@ -1,0 +1,35 @@
+﻿<Window x:Class="Win11_Extra_Clock.UI.FlyoutWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:services="clr-namespace:Win11_Extra_Clock.Services"
+WindowStyle="None"
+ResizeMode="NoResize"
+WindowStartupLocation="Manual"
+ShowInTaskbar="False"
+AllowsTransparency="True"
+Background="Transparent"
+Topmost="True"
+ShowActivated="False"
+Width="280" Height="130">
+    <Border x:Name="Chrome" CornerRadius="14"
+        Background="{DynamicResource FlyoutBackgroundBrush}"
+        BorderBrush="{DynamicResource FlyoutBorderBrush}"
+        BorderThickness="1">
+       
+        <Grid Margin="16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="8"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock x:Name="TimeText" Text="00:00:00"
+FontSize="36" FontWeight="SemiBold" Foreground="{DynamicResource FlyoutForegroundBrush}"/>
+            <TextBlock Grid.Row="2" x:Name="DateText" Text="monday, 1 january 2000"
+FontSize="16" Foreground="{DynamicResource FlyoutForegroundBrush}"/>
+            <Ellipse Width="10" Height="10"
+         HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,2,2,0"
+         Fill="#E81123" Stroke="White" StrokeThickness="1"
+         Visibility="{Binding Source={x:Static services:AppState.Instance}, Path=UpdateAvailable, Converter={StaticResource BoolToVisibility}}"/>
+        </Grid>
+    </Border>
+</Window>
