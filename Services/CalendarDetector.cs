@@ -20,7 +20,7 @@ namespace Win11_Extra_Clock.Services
         private AutomationElement? _clockBtn;
         private AutomationPropertyChangedEventHandler? _propHandler;
         private StructureChangedEventHandler? _structHandler;
--
+        
         private DispatcherTimer? _rescanTimer;
         private DispatcherTimer? _fallbackTimer;
 
@@ -362,4 +362,5 @@ namespace Win11_Extra_Clock.Services
             return sb.ToString();
         }
     }
+
 }
