@@ -140,7 +140,6 @@ namespace Win11_Extra_Clock.Services
             {
                 if (_langs.ContainsKey(_overrideCode!)) return _overrideCode!;
                 var pref = _overrideCode!.Split('-')[0]; // en-UK -> en
-                :
                 if (_langs.ContainsKey(pref)) return pref;
                 var anyPref = _langs.Keys.FirstOrDefault(k => k.StartsWith(pref + "-", StringComparison.OrdinalIgnoreCase));
                 if (!string.IsNullOrEmpty(anyPref)) return anyPref!;
@@ -191,4 +190,5 @@ namespace Win11_Extra_Clock.Services
             return fallback ?? key;
         }
     }
+
 }
