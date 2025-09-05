@@ -64,11 +64,6 @@ jobs:
       - name: Install WiX 6 CLI
         run: dotnet tool install --global wix --version 6.*
 
-      - name: Add WiX extensions
-        run: |
-          wix extension add WixToolset.UI.wixext
-          wix extension add WixToolset.Util.wixext
-
       - name: Build MSI (WiX 6)
         shell: pwsh
         run: >
