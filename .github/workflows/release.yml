@@ -93,6 +93,21 @@ jobs:
 
           wix extension list -g
 
+      - name: Stage payload for WiX
+        shell: pwsh
+        run: |
+          $pub = Resolve-Path "$PWD\out\publish"
+          $payload = "$PWD\installer\payload"
+          if (Test-Path $payload) { Remove-Item $payload -Recurse -Force }
+          New-Item -ItemType Directory -Force -Path $payload | Out-Null
+      
+          Copy-Item "$pub\*" $payload -Recurse -Force
+      
+          Write-Host "Payload staged at: $payload"
+          $cnt = (Get-ChildItem $payload -Recurse -File).Count
+          Write-Host "Files in payload: $cnt"
+          Get-ChildItem $payload -Recurse | Select-Object FullName,Length | Format-Table -AutoSize
+
       - name: Build MSI (WiX 5)
         shell: pwsh
         run: |
