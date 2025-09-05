@@ -41,12 +41,22 @@ jobs:
           echo "NUM=$v" >> $env:GITHUB_OUTPUT
           Write-Host "Version: $v"
 
-      - name: Restore & Publish (win-x64, multi-file)
+      - name: Verify versions (csproj vs version.txt)
+        shell: pwsh
+        run: |
+          $proj = [xml](Get-Content '${{ env.PROJECT_PATH }}')
+          $csprojVer = ($proj.Project.PropertyGroup | ForEach-Object { $_.Version } | ? { $_ } | Select-Object -First 1)
+          $txt = (Get-Content 'version.txt' -Raw).Trim()
+          Write-Host "Version  csproj: $csprojVer  |  version.txt: $txt"
+          if ($csprojVer -ne $txt) { throw 'Version mismatch' }
+
+      - name: Restore & Publish
         shell: pwsh
         run: |
           dotnet restore
           dotnet publish "${{ env.PROJECT_PATH }}" -c Release -r win-x64 `
-            -p:SelfContained=true -p:PublishSingleFile=false -p:PublishTrimmed=false `
+            -p:SelfContained=true -p:PublishSingleFile=true -p:UseAppHost=true `
+            -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true `
             -o out\publish
 
       - name: List publish output (location + files)
