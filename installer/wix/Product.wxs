@@ -12,7 +12,7 @@
       Scope="perMachine">
 
     <ui:WixUI Id="WixUI_InstallDir" />
-    <ui:WixVariable Id="WixUILicenseRtf" Value="installer\wix\license.rtf"/>
+    <WixVariable Id="WixUILicenseRtf" Value="installer\wix\license.rtf"/>
 
     <MajorUpgrade DowngradeErrorMessage="A newer version of Win11 Extra Clock is already installed." />
 
