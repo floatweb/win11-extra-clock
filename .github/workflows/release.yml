@@ -53,11 +53,21 @@ jobs:
       - name: Install WiX Toolset (v3.11)
         run: choco install wixtoolset -y
 
+      - name: Locate WiX tools
+        id: wix
+        shell: pwsh
+        run: |
+          $root = Get-ChildItem "${env:ProgramFiles(x86)}" -Directory -Filter "WiX Toolset v3.*" |
+                  Sort-Object Name -Descending | Select-Object -First 1
+          if (-not $root) { throw "WiX Toolset v3.x not found under Program Files (x86)" }
+          $bin = Join-Path $root.FullName "bin"
+          "BIN=$bin" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          Write-Host "Using WiX from: $bin"
+      
       - name: Harvest files with Heat
         shell: pwsh
         run: |
-          $wix = "${env:ProgramFiles(x86)}\WiX Toolset v3.11\bin"
-          & "$wix\heat.exe" dir "out\publish" `
+          & "${{ steps.wix.outputs.BIN }}\heat.exe" dir "out\publish" `
             -dr INSTALLDIR `
             -cg AppFiles `
             -gg -sfrag -srd -sreg `
@@ -67,14 +77,13 @@ jobs:
       - name: Build MSI (candle + light)
         shell: pwsh
         run: |
-          $wix = "${env:ProgramFiles(x86)}\WiX Toolset v3.11\bin"
           New-Item -ItemType Directory -Force -Path obj, dist | Out-Null
-          & "$wix\candle.exe" `
+          & "${{ steps.wix.outputs.BIN }}\candle.exe" `
             -dSourceDir="out\publish" `
             -dProductVersion="${{ steps.v.outputs.NUM }}" `
             -out obj\ `
             installer\wix\Product.wxs installer\wix\Files.wxs
-          & "$wix\light.exe" `
+          & "${{ steps.wix.outputs.BIN }}\light.exe" `
             -ext WixUIExtension -ext WixUtilExtension `
             -cultures:en-us `
             -out "dist\Win11ExtraClock-x64-${{ steps.v.outputs.NUM }}.msi" `
