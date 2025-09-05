@@ -22,29 +22,28 @@
       <ComponentGroupRef Id="AppFiles" />
     </Feature>
 
-    <Directory Id="TARGETDIR" Name="SourceDir">
-      <Directory Id="ProgramFilesFolder">
-        <Directory Id="INSTALLDIR" Name="Win11 Extra Clock" />
-      </Directory>
-      <Directory Id="ProgramMenuFolder">
-        <Directory Id="AppShortcuts" Name="Win11 Extra Clock" />
-      </Directory>
-      <Directory Id="StartupFolder" />
-    </Directory>
-
     <DirectoryRef Id="INSTALLDIR">
-      <Component Id="Shortcuts" Guid="*">
-        <File Id="ExeFile" Source="$(var.SourceDir)\Win11 Extra Clock.exe" KeyPath="yes">
-          <Shortcut Id="StartMenuShortcut"
-                    Directory="AppShortcuts"
-                    Name="Win11 Extra Clock"
-                    WorkingDirectory="INSTALLDIR"
-                    Advertise="no" />
-          <Shortcut Id="StartupShortcut"
-                    Directory="StartupFolder"
-                    Name="Win11 Extra Clock"
-                    WorkingDirectory="INSTALLDIR"
-                    Advertise="no" />
+      <Component Id="StartMenuShortcut" Guid="*">
+        <Shortcut Id="StartMenuShortcut"
+                  Directory="AppShortcuts"
+                  Name="Win11 Extra Clock"
+                  Target="[INSTALLDIR]Win11 Extra Clock.exe"
+                  WorkingDirectory="INSTALLDIR"
+                  Advertise="no" />
+        <RemoveFolder Id="RemoveAppShortcuts" Directory="AppShortcuts" On="uninstall" />
+        <RegistryValue Root="HKCU" Key="Software\Win11ExtraClock" Name="sm" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    
+      <Component Id="StartupShortcut" Guid="*">
+        <Shortcut Id="StartupShortcut"
+                  Directory="StartupFolder"
+                  Name="Win11 Extra Clock"
+                  Target="[INSTALLDIR]Win11 Extra Clock.exe"
+                  WorkingDirectory="INSTALLDIR"
+                  Advertise="no" />
+        <RegistryValue Root="HKCU" Key="Software\Win11ExtraClock" Name="su" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
         </File>
         <RemoveFolder Id="RemoveAppShortcuts" Directory="AppShortcuts" On="uninstall" />
         <RegistryValue Root="HKCU" Key="Software\Win11ExtraClock" Name="installed" Type="integer" Value="1" KeyPath="yes" />
