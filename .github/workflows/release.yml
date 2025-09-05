@@ -27,28 +27,24 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: Determine version
-        id: v
+      - name: Verify versions (csproj vs version.txt)
         shell: pwsh
         run: |
-          if ("${{ github.event_name }}" -eq "workflow_dispatch") {
-            $v = "${{ github.event.inputs.version }}"
-          } else {
-            $tag = "${{ github.ref_name }}"
-            $v = $tag.TrimStart('v')
-          }
-          if (-not $v) { throw "Version could not be determined." }
-          echo "NUM=$v" >> $env:GITHUB_OUTPUT
-          Write-Host "Version: $v"
+          $proj = [xml](Get-Content '${{ env.PROJECT_PATH }}')
+          $csprojVer = ($proj.Project.PropertyGroup | ForEach-Object { $_.Version } | ? { $_ } | Select-Object -First 1)
+          $txt = (Get-Content 'version.txt' -Raw).Trim()
+          Write-Host "Version  csproj: $csprojVer  |  version.txt: $txt"
+          if ($csprojVer -ne $txt) { throw 'Version mismatch' }
 
       - name: Restore & Publish (win-x64)
         shell: pwsh
-        run: |
-          dotnet restore
-          dotnet publish "${{ env.PROJECT_PATH }}" -c Release -r win-x64 `
-            -p:SelfContained=true -p:PublishSingleFile=false -p:PublishTrimmed=false `
-            -p:UseAppHost=true `
-            -o out\publish
+        run: >
+          dotnet publish "${{ env.PROJECT_PATH }}"
+          -c Release -r win-x64
+          -p:PublishSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
+          -p:PublishTrimmed=false
+          -o out/publish
 
 # Installer
 
@@ -78,8 +74,9 @@ jobs:
         run: |
           dotnet tool install --global wix --version 5.*
           wix --version
-          wix extension add WixToolset.UI.wixext
-          wix extension add WixToolset.Util.wixext
+          wix extension add WixToolset.UI.wixext/5.*
+          wix extension add WixToolset.Util.wixext/5.*
+          wix extension list
         # https://docs.firegiant.com/wix/tools/wixexe/
 
       - name: Build MSI (WiX 5)
