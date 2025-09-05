@@ -92,7 +92,6 @@ jobs:
             -define AppExeName="Win11 Extra Clock.exe" `
             -define PubDir="$PubDir" `
             -define LicenseRtf="$License" `
-            -v diagnostic `
             -o "$MsiOut"
 
           Write-Host "MSI built at:"
