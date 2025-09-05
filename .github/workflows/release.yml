@@ -127,6 +127,7 @@ jobs:
           New-Item -ItemType Directory -Force -Path (Split-Path $MsiOut) | Out-Null
 
           Write-Host "Payload location: $Payload"
+          Get-ChildItem "$Payload" -Recurse | Select-Object FullName,Length | Format-Table -AutoSize
           Write-Host "License location: $License"
           Write-Host "Icon location: $Icon"
       
