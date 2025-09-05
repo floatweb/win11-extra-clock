@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
-     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui"
-     xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
 
   <Package
       Name="Win11 Extra Clock"
@@ -21,31 +20,33 @@
 
     <StandardDirectory Id="ProgramMenuFolder">
       <Directory Id="ProgramMenuDir" Name="Win11 Extra Clock">
-        <Component Id="StartMenuShortcut" Guid="*">
+        <Component Id="StartMenuShortcut" Guid="{2B8C8A7B-9D40-4E52-9E30-6D7E1B2D7F21}">
           <Shortcut Id="StartMenuShortcut"
                     Name="Win11 Extra Clock"
                     Target="[INSTALLDIR]$(var.AppExeName)"
                     WorkingDirectory="INSTALLDIR" />
           <RemoveFolder Id="RemovePMDir" Directory="ProgramMenuDir" On="uninstall" />
-          <util:RegistryValue Root="HKLM" Key="Software\Win11ExtraClock" Name="pm"
-                              Type="integer" Value="1" KeyPath="yes" />
+          <RegistryKey Root="HKLM" Key="Software\Win11ExtraClock">
+            <RegistryValue Name="pm" Type="integer" Value="1" KeyPath="yes" />
+          </RegistryKey>
         </Component>
       </Directory>
     </StandardDirectory>
 
     <StandardDirectory Id="StartupFolder">
-      <Component Id="StartupShortcut" Guid="*">
+      <Component Id="StartupShortcut" Guid="{6C7B7D53-1D8E-4B2A-9A3D-0C8C5F3E8B27}">
         <Shortcut Id="StartupShortcut"
                   Name="Win11 Extra Clock"
                   Target="[INSTALLDIR]$(var.AppExeName)"
                   WorkingDirectory="INSTALLDIR" />
-        <util:RegistryValue Root="HKCU" Key="Software\Win11ExtraClock" Name="startup"
-                            Type="integer" Value="1" KeyPath="yes" />
-        <util:RegistryValue Root="HKCU"
-                            Key="Software\Microsoft\Windows\CurrentVersion\Run"
-                            Name="Win11 Extra Clock"
-                            Value="&quot;[INSTALLDIR]$(var.AppExeName)&quot;"
-                            Type="string" />
+        <RegistryKey Root="HKCU" Key="Software\Win11ExtraClock">
+          <RegistryValue Name="startup" Type="integer" Value="1" KeyPath="yes" />
+        </RegistryKey>
+        <RegistryKey Root="HKCU" Key="Software\Microsoft\Windows\CurrentVersion\Run">
+          <RegistryValue Name="Win11 Extra Clock"
+                         Type="string"
+                         Value="&quot;[INSTALLDIR]$(var.AppExeName)&quot;" />
+        </RegistryKey>
       </Component>
     </StandardDirectory>
 
