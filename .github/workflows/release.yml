@@ -3,14 +3,14 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'                 # rulează automat când împingi un tag vX.Y.Z
-  workflow_dispatch:         # sau manual din UI
+      - 'v*'
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: windows-latest
     env:
-      PROJECT_PATH: 'Win11 Extra Clock.csproj'   # <<< schimbă dacă ai alt path
+      PROJECT_PATH: 'Win11 Extra Clock.csproj'
     steps:
       - uses: actions/checkout@v4
 
