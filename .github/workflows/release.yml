@@ -34,7 +34,7 @@ jobs:
           if ("${{ github.event_name }}" -eq "workflow_dispatch") {
             $v = "${{ github.event.inputs.version }}"
           } else {
-            $tag = "${{ github.ref_name }}"  # like v1.2.3
+            $tag = "${{ github.ref_name }}"
             $v = $tag.TrimStart('v')
           }
           if (-not $v) { throw "Version could not be determined." }
@@ -50,50 +50,78 @@ jobs:
             -p:UseAppHost=true `
             -o out\publish
 
-      - name: Install NSIS
+# Installer
+
+      - name: List publish output (location + files)
         shell: pwsh
         run: |
-          choco install nsis -y
-          makensis -VERSION
+          Write-Host "Repo root: $PWD"
+          $p = Resolve-Path "out\publish"
+          Write-Host "Publish folder: $p"
+          Get-ChildItem $p -Recurse | Select-Object FullName,Length | Format-Table -AutoSize
 
-      - name: Build NSIS setup
+      - name: Detect EXE name
+        id: props
         shell: pwsh
         run: |
-          $pub  = (Resolve-Path "out\publish").Path
-          $ver  = "${{ steps.v.outputs.NUM }}"
-          $asm  = "${{ steps.props.outputs.ASM }}"
-          $rtf  = (Resolve-Path "installer\assets\license.rtf").Path
-          New-Item -ItemType Directory -Force -Path dist | Out-Null
-          $outfile = (Resolve-Path "dist").Path + "\Win11ExtraClock-x64-$ver-setup.exe"
-
-          makensis /V4 `
-            "/DAPP_VERSION=$ver" `
-            "/DAPP_NAME=Win11 Extra Clock" `
-            "/DCOMPANY=Float Web" `
-            "/DPUBLISH_DIR=$pub" `
-            "/DEXE_NAME=$asm.exe" `
-            "/DLICENSE_RTF=$rtf" `
-            "/DOUTFILE=$outfile" `
-            "${{ env.NSIS_SCRIPT }}"
-
-          Write-Host "Built:"
-          Get-Item $outfile | Select-Object FullName,Length | Format-Table -AutoSize
-
-      - name: Generate checksums
-        shell: pwsh
-        run: |
-          Get-ChildItem dist\*.exe | ForEach-Object {
-            $hash = (Get-FileHash -Algorithm SHA256 $_.FullName).Hash
-            "$hash  $($_.Name)" | Out-File -Encoding ASCII "$($_.FullName).sha256.txt"
+          $asm = (dotnet msbuild "${{ env.PROJECT_PATH }}" -getProperty:AssemblyName).Trim()
+          if (-not $asm) { $asm = "Win11 Extra Clock" }
+          $exe = Join-Path (Resolve-Path "out\publish") "$asm.exe"
+          if (-not (Test-Path $exe)) {
+            Write-Host "Expected EXE not found at: $exe"
+            throw "App EXE not found. Ensure <OutputType>WinExe</OutputType> and <UseAppHost>true</UseAppHost> in csproj."
           }
-          Get-ChildItem dist | Select-Object Name,Length | Format-Table -AutoSize
+          echo "ASM=$asm" >> $env:GITHUB_OUTPUT
 
-      - name: Upload dist artifact
-        uses: actions/upload-artifact@v4
+      - name: Install WiX 5
+        shell: pwsh
+        run: |
+          dotnet tool install --global wix --version 5.*
+          wix --version
+          wix extension add WixToolset.UI.wixext
+          wix extension add WixToolset.Util.wixext
+        # https://docs.firegiant.com/wix/tools/wixexe/
+
+      - name: Build MSI (WiX 5)
+        shell: pwsh
+        run: |
+          $PubDir  = (Resolve-Path "$PWD\out\publish").Path
+          $MsiOut  = "$PWD\dist\Win11ExtraClock-x64-${{ steps.v.outputs.NUM }}.msi"
+          New-Item -ItemType Directory -Force -Path (Split-Path $MsiOut) | Out-Null
+
+          # repo res
+          $License = (Resolve-Path "$PWD\installer\assets\license.rtf").Path
+          $Icon    = (Resolve-Path "$PWD\installer\assets\win11_extra_clock_icon.ico" -ErrorAction SilentlyContinue)
+
+          $iconArg = ""
+          if ($Icon) { $iconArg = "-define AppIconPath=`"$Icon`"" }
+
+          wix build installer\wix\Product.wxs installer\wix\Files.wxs `
+            -arch x64 `
+            -ext WixToolset.UI.wixext `
+            -ext WixToolset.Util.wixext `
+            -define ProductVersion="${{ steps.v.outputs.NUM }}" `
+            -define AppExeName="${{ steps.props.outputs.ASM }}.exe" `
+            -define LicenseRtf="$License" `
+            -bindpath Publish="$PubDir" `
+            -v diagnostic `
+            -o "$MsiOut"
+
+          Write-Host "MSI built at:"
+          Get-Item "$MsiOut" | Select-Object FullName,Length | Format-Table -AutoSize
+
+      - name: Generate MSI checksum & upload dist
+        shell: pwsh
+        run: |
+          $msi = Get-Item "dist\Win11ExtraClock-x64-${{ steps.v.outputs.NUM }}.msi"
+          $hash = (Get-FileHash -Algorithm SHA256 $msi.FullName).Hash
+          "$hash  $($msi.Name)" | Out-File -Encoding ASCII "$($msi.FullName).sha256.txt"
+      - uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist/*
 
+# Release
   release:
     needs: build
     runs-on: windows-latest
