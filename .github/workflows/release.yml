@@ -133,7 +133,6 @@ jobs:
             -define AppExeName="$Asm.exe" `
             -define LicenseRtf="$License" `
             -bindpath Publish="$PubDir" `
-            --verbosity diagnostic `
             -o "$MsiOut"
       
           Write-Host "MSI built at:"
@@ -180,5 +179,5 @@ jobs:
           make_latest: true
           draft: false
           files: |
-            dist/Win11ExtraClock-x64-*-setup.exe
-            dist/Win11ExtraClock-x64-*-setup.exe.sha256.txt
+            dist/Win11ExtraClock-x64-*.msi
+            dist/Win11ExtraClock-x64-*.msi.sha256.txt
