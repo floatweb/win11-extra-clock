@@ -24,28 +24,28 @@
       <Directory Id="AppShortcuts" Name="Win11 Extra Clock" />
     </StandardDirectory>
 
-    <StandardDirectory Id="StartupFolder" />
-
     <DirectoryRef Id="AppShortcuts">
       <Component Id="StartMenuShortcut" Guid="*">
         <Shortcut Id="StartMenuShortcut"
                   Name="Win11 Extra Clock"
-                  Target="[INSTALLDIR]Win11 Extra Clock.exe"
+                  Target="[INSTALLDIR]Win11_Extra_Clock.exe"
                   WorkingDirectory="INSTALLDIR"
                   Advertise="no" />
         <RemoveFolder Id="RemoveAppShortcuts" Directory="AppShortcuts" On="uninstall" />
-        <RegistryValue Root="HKCU" Key="Software\Win11ExtraClock" Name="sm" Type="integer" Value="1" KeyPath="yes" />
+        <RegistryValue Root="HKCU" Key="Software\FloatWeb\Win11ExtraClock" Name="StartMenuShortcut" Type="integer" Value="1" KeyPath="yes" />
       </Component>
     </DirectoryRef>
 
-    <StandardDirectory Id="StartupFolder">
+    <StandardDirectory Id="StartupFolder" />
+
+    <DirectoryRef Id="StartupFolder">
       <Component Id="StartupShortcut" Guid="*">
         <Shortcut Id="StartupShortcut"
                   Name="Win11 Extra Clock"
-                  Target="[INSTALLDIR]Win11 Extra Clock.exe"
+                  Target="[INSTALLDIR]Win11_Extra_Clock.exe"
                   WorkingDirectory="INSTALLDIR"
                   Advertise="no" />
-        <RegistryValue Root="HKCU" Key="Software\Win11ExtraClock" Name="su" Type="integer" Value="1" KeyPath="yes" />
+        <RegistryValue Root="HKCU" Key="Software\FloatWeb\Win11ExtraClock" Name="StartupShortcut" Type="integer" Value="1" KeyPath="yes" />
       </Component>
     </StandardDirectory>
 
