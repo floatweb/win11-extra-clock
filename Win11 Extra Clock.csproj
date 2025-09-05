@@ -4,6 +4,12 @@
 		<TargetFramework>net8.0-windows10.0.26100.0</TargetFramework>
 		<UseWPF>true</UseWPF>
 		<UseWindowsForms>true</UseWindowsForms>
+	    <AssemblyName>Win11 Extra Clock</AssemblyName>
+	    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+	    <UseAppHost>true</UseAppHost>
+	    <SelfContained>true</SelfContained>
+	    <PublishSingleFile>false</PublishSingleFile>
+	    <PublishTrimmed>false</PublishTrimmed>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
@@ -187,4 +193,5 @@
 	    <LastGenOutput>Settings.Designer.cs</LastGenOutput>
 	  </None>
 	</ItemGroup>
+
 </Project>
