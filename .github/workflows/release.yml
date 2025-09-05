@@ -1,10 +1,15 @@
 name: Release
+permissions:
+  contents: write
 
 on:
   push:
-    tags:
-      - 'v*'
+    tags: ['v*']
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version (e.g. 1.0.0)'
+        required: true
 
 jobs:
   build:
@@ -14,12 +19,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Extract version from tag
+      - name: Determine version
         id: v
         shell: bash
         run: |
-          v="${GITHUB_REF_NAME#v}"
-          echo "NUM=$v" >> $GITHUB_OUTPUT
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            if [ -z "${{ github.event.inputs.version }}" ]; then
+              echo "Missing manual input 'version' (e.g. 1.0.0)"; exit 1
+            fi
+            echo "NUM=${{ github.event.inputs.version }}" >> "$GITHUB_OUTPUT"
+          else
+            if [[ "${GITHUB_REF_NAME}" != v* ]]; then
+              echo "Tag must start with 'v' (e.g. v1.0.0). Got: ${GITHUB_REF_NAME}"; exit 1
+            fi
+            echo "NUM=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -29,17 +43,15 @@ jobs:
       - name: Restore
         run: dotnet restore
 
-      - name: Verify versions (tag vs csproj vs version.txt)
+      - name: Verify versions (tag/input vs csproj vs version.txt)
         shell: pwsh
         run: |
-          $tag = "${{ steps.v.outputs.NUM }}"
-          $proj = [xml](Get-Content "${{ env.PROJECT_PATH }}")
-          $csprojVer = ($proj.Project.PropertyGroup | ForEach-Object { $_.Version } | Where-Object { $_ } | Select-Object -First 1)
-          $txt = (Get-Content "version.txt" -Raw).Trim()
-          Write-Host "Tag: $tag  |  csproj: $csprojVer  |  version.txt: $txt"
-          if ($csprojVer -ne $tag -or $txt -ne $tag) {
-            Write-Error "Version mismatch. Keep tag, csproj <Version>, and version.txt identical."; exit 1
-          }
+          $tag = '${{ steps.v.outputs.NUM }}'
+          $proj = [xml](Get-Content '${{ env.PROJECT_PATH }}')
+          $csprojVer = ($proj.Project.PropertyGroup | ForEach-Object { $_.Version } | ? { $_ } | Select-Object -First 1)
+          $txt = (Get-Content 'version.txt' -Raw).Trim()
+          Write-Host "Version  tag/input: $tag  |  csproj: $csprojVer  |  version.txt: $txt"
+          if ($csprojVer -ne $tag -or $txt -ne $tag) { throw 'Version mismatch' }
 
       - name: Publish (self-contained, single file)
         run: >
@@ -50,37 +62,37 @@ jobs:
           -p:PublishTrimmed=false
           -o out/publish
 
-      - name: Install WiX Toolset (v3.11)
+      - name: Install WiX Toolset
         run: choco install wixtoolset -y
 
       - name: Locate WiX tools
         id: wix
         shell: pwsh
         run: |
-          $root = Get-ChildItem "${env:ProgramFiles(x86)}" -Directory -Filter "WiX Toolset v3.*" |
+          $root = Get-ChildItem "${env:ProgramFiles(x86)}" -Directory -Filter 'WiX Toolset v3.*' |
                   Sort-Object Name -Descending | Select-Object -First 1
-          if (-not $root) { throw "WiX Toolset v3.x not found under Program Files (x86)" }
-          $bin = Join-Path $root.FullName "bin"
+          if (-not $root) { throw 'WiX Toolset v3.x not found under Program Files (x86)' }
+          $bin = Join-Path $root.FullName 'bin'
           "BIN=$bin" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
           Write-Host "Using WiX from: $bin"
-      
+
       - name: Harvest files with Heat
         shell: pwsh
         run: |
-          & "${{ steps.wix.outputs.BIN }}\heat.exe" dir "out\publish" `
+          & "${{ steps.wix.outputs.BIN }}\heat.exe" dir 'out\publish' `
             -dr INSTALLDIR `
             -cg AppFiles `
             -gg -sfrag -srd -sreg `
             -var var.SourceDir `
             -out installer\wix\Files.wxs
-      
+
       - name: Build MSI (candle + light)
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path obj, dist | Out-Null
           & "${{ steps.wix.outputs.BIN }}\candle.exe" `
-            -dSourceDir="out\publish" `
-            -dProductVersion="${{ steps.v.outputs.NUM }}" `
+            -dSourceDir='out\publish' `
+            -dProductVersion='${{ steps.v.outputs.NUM }}' `
             -out obj\ `
             installer\wix\Product.wxs installer\wix\Files.wxs
           & "${{ steps.wix.outputs.BIN }}\light.exe" `
@@ -108,14 +120,25 @@ jobs:
           name: dist
           path: dist
 
+      - name: Determine version
+        id: v
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "NUM=${{ github.event.inputs.version }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "NUM=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          token: ${{ github.token }}
           tag_name: v${{ steps.v.outputs.NUM }}
           name: Win11 Extra Clock ${{ steps.v.outputs.NUM }}
           generate_release_notes: true
+          make_latest: true
           draft: false
-          allowUpdates: true
           files: |
             dist/Win11ExtraClock-x64-*.msi
             dist/Win11ExtraClock-x64-*.msi.sha256.txt
