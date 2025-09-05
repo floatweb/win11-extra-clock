@@ -96,25 +96,12 @@ jobs:
       - name: Build MSI (WiX 5)
         shell: pwsh
         run: |
-          $Version = if ("${{ github.event_name }}" -eq "workflow_dispatch") {
-            "${{ github.event.inputs.version }}"
-          } else {
-            "${{ github.ref_name }}".TrimStart('v')
-          }
-          if ([string]::IsNullOrWhiteSpace($Version)) {
-            Write-Error "Version could not be determined."; exit 1
-          }
-          Write-Host "Using version: $Version"
+          $Version = if ("${{ github.event_name }}" -eq "workflow_dispatch") { "${{ github.event.inputs.version }}" } else { "${{ github.ref_name }}".TrimStart('v') }
+          if ([string]::IsNullOrWhiteSpace($Version)) { throw "Version could not be determined." }
       
           $PubDir = (Resolve-Path "$PWD\out\publish").Path
-          Write-Host "Publish: $PubDir"
-          $Asm = (dotnet msbuild '${{ env.PROJECT_PATH }}' -getProperty:AssemblyName).Trim()
+          $Asm    = (dotnet msbuild '${{ env.PROJECT_PATH }}' -getProperty:AssemblyName).Trim()
           if (-not $Asm) { $Asm = 'Win11 Extra Clock' }
-          $Exe = Join-Path $PubDir "$Asm.exe"
-          if (-not (Test-Path $Exe)) {
-            Get-ChildItem $PubDir -Recurse | Select-Object FullName,Length | Format-Table -AutoSize
-            throw "App EXE not found at $Exe (check <OutputType>WinExe</OutputType> and <UseAppHost>true</UseAppHost> in csproj)."
-          }
       
           $License = (Resolve-Path "$PWD\installer\assets\license.rtf").Path
           $Icon    = (Resolve-Path "$PWD\installer\assets\win11_extra_clock_icon.ico" -ErrorAction SilentlyContinue)
@@ -122,21 +109,29 @@ jobs:
           $MsiOut  = "$PWD\dist\Win11ExtraClock-x64-$Version.msi"
           New-Item -ItemType Directory -Force -Path (Split-Path $MsiOut) | Out-Null
       
-          $iconArg = ""
-          if ($Icon) { $iconArg = "-define AppIconPath=`"$Icon`"" }
+          if ($Icon) {
+            wix build installer\wix\Product.wxs installer\wix\Files.wxs `
+              -arch x64 `
+              -ext WixToolset.UI.wixext `
+              -ext WixToolset.Util.wixext `
+              -define ProductVersion="$Version" `
+              -define AppExeName="$Asm.exe" `
+              -define LicenseRtf="$License" `
+              -define AppIconPath="$Icon" `
+              -bindpath Publish="$PubDir" `
+              -o "$MsiOut"
+          } else {
+            wix build installer\wix\Product.wxs installer\wix\Files.wxs `
+              -arch x64 `
+              -ext WixToolset.UI.wixext `
+              -ext WixToolset.Util.wixext `
+              -define ProductVersion="$Version" `
+              -define AppExeName="$Asm.exe" `
+              -define LicenseRtf="$License" `
+              -bindpath Publish="$PubDir" `
+              -o "$MsiOut"
+          }
       
-          wix build installer\wix\Product.wxs installer\wix\Files.wxs `
-            -arch x64 `
-            -ext WixToolset.UI.wixext `
-            -ext WixToolset.Util.wixext `
-            -define ProductVersion="$Version" `
-            -define AppExeName="$Asm.exe" `
-            -define LicenseRtf="$License" `
-            -bindpath Publish="$PubDir" `
-            $iconArg `
-            -o "$MsiOut"
-      
-          Write-Host "MSI built at:"
           Get-Item "$MsiOut" | Select-Object FullName,Length | Format-Table -AutoSize
       
       - name: Generate MSI checksum & upload dist
