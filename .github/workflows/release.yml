@@ -50,21 +50,39 @@ jobs:
           -p:PublishTrimmed=false
           -o out/publish
 
-      - name: Install Inno Setup
-        run: choco install innosetup -y
+      - name: Install WiX Toolset (v3.11)
+        run: choco install wixtoolset -y
 
-      - name: Build installer (Inno)
+      - name: Harvest files with Heat
         shell: pwsh
         run: |
-         & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" /Qp `
-           /DMyAppVersion=${{ steps.v.outputs.NUM }} `
-           /DSourceDir="${{ github.workspace }}\out\publish" `
-           /DOutDir="${{ github.workspace }}\dist" `
-           installer\Win11ExtraClock.iss
+          $wix = "${env:ProgramFiles(x86)}\WiX Toolset v3.11\bin"
+          & "$wix\heat.exe" dir "out\publish" `
+            -dr INSTALLDIR `
+            -cg AppFiles `
+            -gg -sfrag -srd -sreg `
+            -var var.SourceDir `
+            -out installer\wix\Files.wxs
+      
+      - name: Build MSI (candle + light)
+        shell: pwsh
+        run: |
+          $wix = "${env:ProgramFiles(x86)}\WiX Toolset v3.11\bin"
+          New-Item -ItemType Directory -Force -Path obj, dist | Out-Null
+          & "$wix\candle.exe" `
+            -dSourceDir="out\publish" `
+            -dProductVersion="${{ steps.v.outputs.NUM }}" `
+            -out obj\ `
+            installer\wix\Product.wxs installer\wix\Files.wxs
+          & "$wix\light.exe" `
+            -ext WixUIExtension -ext WixUtilExtension `
+            -cultures:en-us `
+            -out "dist\Win11ExtraClock-x64-${{ steps.v.outputs.NUM }}.msi" `
+            obj\Product.wixobj obj\Files.wixobj
 
       - name: Checksums
         run: |
-          certutil -hashfile "dist\Win11ExtraClock-x64-${{ steps.v.outputs.NUM }}-Setup.exe" SHA256 > "dist\Win11ExtraClock-x64-${{ steps.v.outputs.NUM }}-Setup.exe.sha256.txt"
+          certutil -hashfile "dist\Win11ExtraClock-x64-${{ steps.v.outputs.NUM }}.msi" SHA256 > "dist\Win11ExtraClock-x64-${{ steps.v.outputs.NUM }}.msi.sha256.txt"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -84,8 +102,11 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            dist/Win11ExtraClock-x64-*-Setup.exe
-            dist/Win11ExtraClock-x64-*-Setup.exe.sha256.txt
-          draft: false
+          tag_name: v${{ steps.v.outputs.NUM }}
+          name: Win11 Extra Clock ${{ steps.v.outputs.NUM }}
           generate_release_notes: true
+          draft: false
+          allowUpdates: true
+          files: |
+            dist/Win11ExtraClock-x64-*.msi
+            dist/Win11ExtraClock-x64-*.msi.sha256.txt
