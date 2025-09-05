@@ -15,6 +15,12 @@
     <Icon Id="AppIcon" SourceFile="assets\win11_extra_clock_icon.ico" />
     <Property Id="ARPPRODUCTICON" Value="AppIcon" />
 
+    <SummaryInformation
+          Title="Win11 Extra Clock Installer (x64)"
+          Subject="Win11 Extra Clock"
+          Keywords="Installer"
+          Comments="MSI package for Win11 Extra Clock (x64)" />
+
     <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
     <WixVariable Id="WixUILicenseRtf" Value="installer\wix\license.rtf" />
     <UIRef Id="WixUI_InstallDir" />
