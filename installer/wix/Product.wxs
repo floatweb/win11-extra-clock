@@ -1,66 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
 
-<WixVariable Id="WixUILicenseRtf" Value="installer\wix\license.rtf" />
-<WixVariable Id="WixUIBannerBmp"  Value="installer\wix\banner-light.bmp" />
-
-  <Product
-    Id="*"
-    Name="Win11 Extra Clock"
-    Manufacturer="Float Web"
-    Version="$(var.ProductVersion)"
-    Language="1033"
-    UpgradeCode="{47B46A15-4BB3-4303-8D2D-A410EC995E37}">
-
-    <Package InstallerVersion="500" Compressed="yes" InstallScope="perMachine" />
-    <MajorUpgrade DowngradeErrorMessage="A newer version of Win11 Extra Clock is already installed." />
-    <MediaTemplate EmbedCab="yes" />
-
-    <Icon Id="AppIcon" SourceFile="assets\win11_extra_clock_icon.ico" />
-    <Property Id="ARPPRODUCTICON" Value="AppIcon" />
-
-    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
-    <UIRef Id="WixUI_InstallDir" />
-
-    <Directory Id="TARGETDIR" Name="SourceDir">
-      <Directory Id="ProgramFilesFolder">
-        <Directory Id="INSTALLDIR" Name="Win11 Extra Clock" />
+  <WixVariable Id="WixUILicenseRtf" Value="installer\wix\license.rtf" />
+  <WixVariable Id="WixUIBannerBmp"  Value="installer\wix\banner-light.bmp" />
+  
+    <Product
+      Id="*"
+      Name="Win11 Extra Clock"
+      Manufacturer="Float Web"
+      Version="$(var.ProductVersion)"
+      Language="1033"
+      UpgradeCode="{47B46A15-4BB3-4303-8D2D-A410EC995E37}">
+  
+      <Package InstallerVersion="500" Compressed="yes" InstallScope="perMachine" />
+      <MajorUpgrade DowngradeErrorMessage="A newer version of Win11 Extra Clock is already installed." />
+      <MediaTemplate EmbedCab="yes" />
+  
+      <Icon Id="AppIcon" SourceFile="assets\win11_extra_clock_icon.ico" />
+      <Property Id="ARPPRODUCTICON" Value="AppIcon" />
+  
+      <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
+      <UIRef Id="WixUI_InstallDir" />
+  
+      <Directory Id="TARGETDIR" Name="SourceDir">
+        <Directory Id="ProgramFilesFolder">
+          <Directory Id="INSTALLDIR" Name="Win11 Extra Clock" />
+        </Directory>
+        <Directory Id="ProgramMenuFolder">
+          <Directory Id="AppShortcuts" Name="Win11 Extra Clock" />
+        </Directory>
+        <Directory Id="StartupFolder" />
       </Directory>
-      <Directory Id="ProgramMenuFolder">
-        <Directory Id="AppShortcuts" Name="Win11 Extra Clock" />
-      </Directory>
-      <Directory Id="StartupFolder" />
-    </Directory>
-
-    <DirectoryRef Id="INSTALLDIR">
-     
-      <Component Id="StartMenuShortcut" Guid="*">
-        <Shortcut Id="StartMenuShortcut"
-                  Directory="AppShortcuts"
-                  Name="Win11 Extra Clock"
-                  Target="[INSTALLDIR]Win11 Extra Clock.exe"
-                  WorkingDirectory="INSTALLDIR"
-                  Advertise="no" />
-        <RemoveFolder Id="RemoveAppShortcuts" Directory="AppShortcuts" On="uninstall" />
-        
-        <RegistryValue Root="HKCU" Key="Software\Win11ExtraClock" Name="sm" Type="integer" Value="1" KeyPath="yes" />
-      </Component>
-
-      <Component Id="StartupShortcut" Guid="*">
-        <Shortcut Id="StartupShortcut"
-                  Directory="StartupFolder"
-                  Name="Win11 Extra Clock"
-                  Target="[INSTALLDIR]Win11 Extra Clock.exe"
-                  WorkingDirectory="INSTALLDIR"
-                  Advertise="no" />
-        <RegistryValue Root="HKCU" Key="Software\Win11ExtraClock" Name="su" Type="integer" Value="1" KeyPath="yes" />
-      </Component>
-    </DirectoryRef>
-
-    <Feature Id="MainFeature" Title="Win11 Extra Clock" Level="1">
-      <ComponentGroupRef Id="AppFiles" />
-      <ComponentRef Id="StartMenuShortcut" />
-      <ComponentRef Id="StartupShortcut" />
-    </Feature>
-  </Product>
+  
+      <DirectoryRef Id="INSTALLDIR">
+       
+        <Component Id="StartMenuShortcut" Guid="*">
+          <Shortcut Id="StartMenuShortcut"
+                    Directory="AppShortcuts"
+                    Name="Win11 Extra Clock"
+                    Target="[INSTALLDIR]Win11 Extra Clock.exe"
+                    WorkingDirectory="INSTALLDIR"
+                    Advertise="no" />
+          <RemoveFolder Id="RemoveAppShortcuts" Directory="AppShortcuts" On="uninstall" />
+          
+          <RegistryValue Root="HKCU" Key="Software\Win11ExtraClock" Name="sm" Type="integer" Value="1" KeyPath="yes" />
+        </Component>
+  
+        <Component Id="StartupShortcut" Guid="*">
+          <Shortcut Id="StartupShortcut"
+                    Directory="StartupFolder"
+                    Name="Win11 Extra Clock"
+                    Target="[INSTALLDIR]Win11 Extra Clock.exe"
+                    WorkingDirectory="INSTALLDIR"
+                    Advertise="no" />
+          <RegistryValue Root="HKCU" Key="Software\Win11ExtraClock" Name="su" Type="integer" Value="1" KeyPath="yes" />
+        </Component>
+      </DirectoryRef>
+  
+      <Feature Id="MainFeature" Title="Win11 Extra Clock" Level="1">
+        <ComponentGroupRef Id="AppFiles" />
+        <ComponentRef Id="StartMenuShortcut" />
+        <ComponentRef Id="StartupShortcut" />
+      </Feature>
+    </Product>
 </Wix>
