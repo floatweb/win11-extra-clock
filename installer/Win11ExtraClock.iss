@@ -35,7 +35,7 @@ Name: "{group}\{#MyAppName}"; Filename: "{app}\Win11 Extra Clock.exe"
 Name: "{userstartup}\{#MyAppName}"; Filename: "{app}\Win11 Extra Clock.exe"; Tasks: autostart
 
 [Tasks]
-Name: "autostart"; Description: "Start {#MyAppName} with Windows"; GroupDescription: "Options:"; Flags: checked
+Name: "autostart"; Description: "Start {#MyAppName} with Windows"; GroupDescription: "Options:"; Flags: checkedonce
 
 [Run]
 Filename: "{app}\Win11 Extra Clock.exe"; Description: "Launch {#MyAppName}"; Flags: nowait postinstall skipifsilent
