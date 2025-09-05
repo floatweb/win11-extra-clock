@@ -133,6 +133,7 @@ jobs:
             -define AppExeName="$Asm.exe" `
             -define LicenseRtf="$License" `
             -bindpath Publish="$PubDir" `
+            $iconArg `
             -o "$MsiOut"
       
           Write-Host "MSI built at:"
