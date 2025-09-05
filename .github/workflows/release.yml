@@ -69,28 +69,18 @@ jobs:
           Write-Host "Payload staged at: $dataDir"
           Get-ChildItem $dataDir -Recurse | Select-Object FullName,Length | Format-Table -AutoSize
 
-      - name: Build installer (QtIFW)
+      - name: Install Qt Installer Framework
         shell: pwsh
         run: |
-          # binarycreator path salvat anterior
-          $bc = Get-Content "$env:RUNNER_TEMP\binarycreator.txt" -Raw
-      
-          $Version = if ("${{ github.event_name }}" -eq "workflow_dispatch") {
-            "${{ github.event.inputs.version }}"
-          } else {
-            "${{ github.ref_name }}".TrimStart('v')
+          choco install qtifw -y | Out-Host
+          if (-not (Get-Command binarycreator -ErrorAction SilentlyContinue)) {
+            try {
+              winget install --id TheQtCompany.QtInstallerFramework -e --silent --accept-package-agreements --accept-source-agreements
+            } catch {}
           }
-          if ([string]::IsNullOrWhiteSpace($Version)) { throw "Version not determined." }
-      
-          $out = "dist\Win11ExtraClock-x64-$Version-setup.exe"
-          New-Item -ItemType Directory -Force -Path (Split-Path $out) | Out-Null
-      
-          & "$bc" -f `
-            -c "installer\ifw\config\config.build.xml" `
-            -p "installer\ifw\packages" `
-            "$out"
-      
-          Get-Item $out | Select-Object FullName,Length | Format-Table -AutoSize
+          $bc = Get-ChildItem "C:\Program Files*" -Recurse -Filter binarycreator.exe -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty FullName
+          if (-not $bc) { throw "binarycreator.exe not found (QtIFW). Check install step above." }
+          "$bc" | Out-File -Encoding ASCII -FilePath "$env:RUNNER_TEMP\binarycreator.txt"
 
       - name: Templatize IFW config & package metadata
         shell: pwsh
@@ -108,14 +98,22 @@ jobs:
         shell: pwsh
         run: |
           $bc = Get-Content "$env:RUNNER_TEMP\binarycreator.txt" -Raw
-          $out = "dist\Win11ExtraClock-x64-${{ github.event_name == 'workflow_dispatch' && github.event.inputs.version || github.ref_name && github.ref_name.substring(1) }}-setup.exe"
+      
+          $Version = if ("${{ github.event_name }}" -eq "workflow_dispatch") {
+            "${{ github.event.inputs.version }}"
+          } else {
+            "${{ github.ref_name }}".TrimStart('v')
+          }
+          if ([string]::IsNullOrWhiteSpace($Version)) { throw "Version not determined." }
+      
+          $out = "dist\Win11ExtraClock-x64-$Version-setup.exe"
           New-Item -ItemType Directory -Force -Path (Split-Path $out) | Out-Null
-
+      
           & "$bc" -f `
             -c "installer\ifw\config\config.build.xml" `
             -p "installer\ifw\packages" `
             "$out"
-
+      
           Get-Item $out | Select-Object FullName,Length | Format-Table -AutoSize
 
       - name: Checksums
