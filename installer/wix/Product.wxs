@@ -23,6 +23,7 @@
     <Property Id="ARPPRODUCTICON" Value="AppIcon"/>
 
     <ui:WixUI Id="WixUI_InstallDir" InstallDirectory="INSTALLDIR"/>
+    <ui:WixVariable Id="WixUILicenseRtf" Value="installer\wix\license.rtf"/>
 
     <Feature Id="MainFeature" Title="Win11 Extra Clock" Level="1">
       <ComponentGroupRef Id="AppFiles"/>
