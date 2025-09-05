@@ -384,6 +384,9 @@ MSBuild_Logs/
 # Visual Studio History (VSHistory) files
 .vshistory/
 
+# WiX auto-generated files
+installer/wix/Files.wxs
+
 # BeatPulse healthcheck temp database
 healthchecksdb
 
