@@ -48,120 +48,76 @@ jobs:
 
 # Installer
 
-      - name: List publish output (location + files)
+      - name: List publish output
         shell: pwsh
         run: |
           Write-Host "Repo root: $PWD"
           $p = Resolve-Path "out\publish"
-          Write-Host "Publish folder: $p"
+          Write-Host "Publish: $p"
           Get-ChildItem $p -Recurse | Select-Object FullName,Length | Format-Table -AutoSize
 
-      - name: Detect EXE name
-        id: props
+      - name: Stage IFW packages (copy payload)
         shell: pwsh
         run: |
-          $asm = (dotnet msbuild "${{ env.PROJECT_PATH }}" -getProperty:AssemblyName).Trim()
-          if (-not $asm) { $asm = "Win11 Extra Clock" }
-          $exe = Join-Path (Resolve-Path "out\publish") "$asm.exe"
-          if (-not (Test-Path $exe)) {
-            Write-Host "Expected EXE not found at: $exe"
-            throw "App EXE not found. Ensure <OutputType>WinExe</OutputType> and <UseAppHost>true</UseAppHost> in csproj."
+          $pkgRoot = "installer\ifw\packages\com.floatweb.win11extraclock"
+          $dataDir = Join-Path $pkgRoot "data"
+          if (Test-Path $dataDir) { Remove-Item $dataDir -Recurse -Force }
+          New-Item -ItemType Directory -Force -Path $dataDir | Out-Null
+
+          Copy-Item "out\publish\*" $dataDir -Recurse -Force
+
+          Write-Host "Payload staged at: $dataDir"
+          Get-ChildItem $dataDir -Recurse | Select-Object FullName,Length | Format-Table -AutoSize
+
+      - name: Install Qt Installer Framework
+        shell: pwsh
+        run: |
+          # 1) încearcă Chocolatey
+          choco install qtifw -y | Out-Host
+          # 2) dacă nu merge, încearcă winget (tace dacă nu e disponibil)
+          if (-not (Get-Command binarycreator -ErrorAction SilentlyContinue)) {
+            try {
+              winget install --id TheQtCompany.QtInstallerFramework -e --silent --accept-package-agreements --accept-source-agreements
+            } catch {}
           }
-          echo "ASM=$asm" >> $env:GITHUB_OUTPUT
+          # 3) caută binarycreator.exe oriunde în Program Files
+          $bc = Get-ChildItem "C:\Program Files*" -Recurse -Filter binarycreator.exe -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty FullName
+          if (-not $bc) { throw "binarycreator.exe not found (QtIFW). Check install step above." }
+          "$bc" | Out-File -Encoding ASCII -FilePath "$env:RUNNER_TEMP\binarycreator.txt"
 
-      - name: Install WiX 5 (+ v5 extensions)
+      - name: Templatize IFW config & package metadata
         shell: pwsh
         run: |
-          dotnet tool install --global wix --version 5.*
-          wix --version
+          $ver = if ("${{ github.event_name }}" -eq "workflow_dispatch") { "${{ github.event.inputs.version }}" } else { "${{ github.ref_name }}".TrimStart('v') }
+          if ([string]::IsNullOrWhiteSpace($ver)) { throw "Version not determined." }
+          $date = (Get-Date -Format 'yyyy-MM-dd')
 
-          $exts = @('WixToolset.UI.wixext','WixToolset.Util.wixext')
-          $try = @('5.0.2','5.0.1','5.0.0')
+          (Get-Content 'installer/ifw/config/config.xml' -Raw).Replace('@VERSION@', $ver) | Set-Content 'installer/ifw/config/config.build.xml' -Encoding UTF8
+          (Get-Content 'installer/ifw/packages/com.floatweb.win11extraclock/meta/package.xml' -Raw).
+            Replace('@VERSION@',$ver).Replace('@RELEASE_DATE@',$date) |
+            Set-Content 'installer/ifw/packages/com.floatweb.win11extraclock/meta/package.build.xml' -Encoding UTF8
 
-          foreach ($e in $exts) {
-            $ok = $false
-            foreach ($v in $try) {
-              Write-Host ">> Installing $e/$v ..."
-              try {
-                wix extension add -g "$e/$v" 2>$null
-                $ok = $true
-                break
-              } catch { }
-            }
-            if (-not $ok) { throw "Could not install $e in version v5.x (tried: $($try -join ', '))." }
+      - name: Build installer (QtIFW)
+        shell: pwsh
+        run: |
+          $bc = Get-Content "$env:RUNNER_TEMP\binarycreator.txt" -Raw
+          $out = "dist\Win11ExtraClock-x64-${{ github.event_name == 'workflow_dispatch' && github.event.inputs.version || github.ref_name && github.ref_name.substring(1) }}-setup.exe"
+          New-Item -ItemType Directory -Force -Path (Split-Path $out) | Out-Null
+
+          & "$bc" -f `
+            -c "installer\ifw\config\config.build.xml" `
+            -p "installer\ifw\packages" `
+            "$out"
+
+          Get-Item $out | Select-Object FullName,Length | Format-Table -AutoSize
+
+      - name: Checksums
+        shell: pwsh
+        run: |
+          Get-ChildItem dist\*.exe | ForEach-Object {
+            $h = (Get-FileHash $_.FullName -Algorithm SHA256).Hash
+            "$h  $($_.Name)" | Out-File -Encoding ASCII "$($_.FullName).sha256.txt"
           }
-
-          wix extension list -g
-
-      - name: Stage payload for WiX
-        shell: pwsh
-        run: |
-          $pub = Resolve-Path "$PWD\out\publish"
-          $payload = "$PWD\installer\payload"
-          if (Test-Path $payload) { Remove-Item $payload -Recurse -Force }
-          New-Item -ItemType Directory -Force -Path $payload | Out-Null
-      
-          Copy-Item "$pub\*" $payload -Recurse -Force
-      
-          Write-Host "Payload staged at: $payload"
-          $cnt = (Get-ChildItem $payload -Recurse -File).Count
-          Write-Host "Files in payload: $cnt"
-          Get-ChildItem $payload -Recurse | Select-Object FullName,Length | Format-Table -AutoSize
-
-      - name: Build MSI (WiX 5)
-        shell: pwsh
-        run: |
-          $Version = if ("${{ github.event_name }}" -eq "workflow_dispatch") { "${{ github.event.inputs.version }}" } else { "${{ github.ref_name }}".TrimStart('v') }
-          if ([string]::IsNullOrWhiteSpace($Version)) { throw "Version could not be determined." }
-      
-          $PubDir = (Resolve-Path "$PWD\out\publish").Path
-          $Payload = (Resolve-Path "$PWD\installer\payload").Path
-          
-          $Asm    = (dotnet msbuild '${{ env.PROJECT_PATH }}' -getProperty:AssemblyName).Trim()
-          if (-not $Asm) { $Asm = 'Win11 Extra Clock' }
-      
-          $License = (Resolve-Path "$PWD\installer\assets\license.rtf").Path
-          $Icon    = (Resolve-Path "$PWD\installer\assets\win11_extra_clock_icon.ico" -ErrorAction SilentlyContinue)
-      
-          $MsiOut  = "$PWD\dist\Win11ExtraClock-x64-$Version.msi"
-          New-Item -ItemType Directory -Force -Path (Split-Path $MsiOut) | Out-Null
-
-          Write-Host "Payload location: $Payload"
-          Get-ChildItem "$Payload" -Recurse | Select-Object FullName,Length | Format-Table -AutoSize
-          Write-Host "License location: $License"
-          Write-Host "Icon location: $Icon"
-      
-          if ($Icon) {
-            wix build installer\wix\Product.wxs installer\wix\Files.wxs `
-              -arch x64 `
-              -ext WixToolset.UI.wixext `
-              -ext WixToolset.Util.wixext `
-              -define ProductVersion="$Version" `
-              -define AppExeName="$Asm.exe" `
-              -define LicenseRtf="$License" `
-              -define AppIconPath="$Icon" `
-              -bindpath Payload="$Payload" `
-              -o "$MsiOut"
-          } else {
-            wix build installer\wix\Product.wxs installer\wix\Files.wxs `
-              -arch x64 `
-              -ext WixToolset.UI.wixext `
-              -ext WixToolset.Util.wixext `
-              -define ProductVersion="$Version" `
-              -define AppExeName="$Asm.exe" `
-              -define LicenseRtf="$License" `
-              -bindpath Payload="$Payload" `
-              -o "$MsiOut"
-          }
-      
-          Get-Item "$MsiOut" | Select-Object FullName,Length | Format-Table -AutoSize
-      
-      - name: Generate MSI checksum & upload dist
-        shell: pwsh
-        run: |
-          $msi = Get-Item "dist\Win11ExtraClock-x64-${{ github.event.inputs.version }}.msi"
-          $hash = (Get-FileHash -Algorithm SHA256 $msi.FullName).Hash
-          "$hash  $($msi.Name)" | Out-File -Encoding ASCII "$($msi.FullName).sha256.txt"
       - uses: actions/upload-artifact@v4
         with:
           name: dist
@@ -197,5 +153,5 @@ jobs:
           make_latest: true
           draft: false
           files: |
-            dist/Win11ExtraClock-x64-*.msi
-            dist/Win11ExtraClock-x64-*.msi.sha256.txt
+            dist/Win11ExtraClock-x64-*-setup.exe
+            dist/Win11ExtraClock-x64-*-setup.exe.sha256.txt
