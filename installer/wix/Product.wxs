@@ -12,7 +12,6 @@
 
     <ui:WixUI Id="WixUI_InstallDir" />
     <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
-    <Variable Id="WixUILicenseRtf" Value="$(var.LicenseRtf)" />
 
     <MajorUpgrade DowngradeErrorMessage="A newer version of Win11 Extra Clock is already installed." />
 
@@ -21,42 +20,39 @@
     </StandardDirectory>
 
     <StandardDirectory Id="ProgramMenuFolder">
-      <Directory Id="ProgramMenuDir" Name="Win11 Extra Clock" />
+      <Directory Id="ProgramMenuDir" Name="Win11 Extra Clock">
+        <Component Id="StartMenuShortcut" Guid="*">
+          <Shortcut Id="StartMenuShortcut"
+                    Name="Win11 Extra Clock"
+                    Target="[INSTALLDIR]$(var.AppExeName)"
+                    WorkingDirectory="INSTALLDIR" />
+          <RemoveFolder Id="RemovePMDir" Directory="ProgramMenuDir" On="uninstall" />
+          <util:RegistryValue Root="HKLM" Key="Software\Win11ExtraClock" Name="pm"
+                              Type="integer" Value="1" KeyPath="yes" />
+        </Component>
+      </Directory>
     </StandardDirectory>
 
-    <StandardDirectory Id="StartupFolder" />
-
-    <?ifdef AppIconPath?>
-      <Icon Id="AppIcon" SourceFile="$(var.AppIconPath)" />
-      <Property Id="ARPPRODUCTICON" Value="AppIcon" />
-    <?endif?>
-
-    <DirectoryRef Id="ProgramMenuDir">
-      <Component Id="StartMenuShortcut" Guid="*">
-        <Shortcut Id="StartMenuShortcut"
-                  Name="Win11 Extra Clock"
-                  Target="[INSTALLDIR]$(var.AppExeName)"
-                  WorkingDirectory="INSTALLDIR" />
-        <RemoveFolder Id="RemovePMDir" Directory="ProgramMenuDir" On="uninstall" />
-        <RegistryValue Root="HKLM" Key="Software\Win11ExtraClock" Name="pm" Type="integer" Value="1" KeyPath="yes" />
-      </Component>
-    </DirectoryRef>
-
-    <DirectoryRef Id="StartupFolder">
+    <StandardDirectory Id="StartupFolder">
       <Component Id="StartupShortcut" Guid="*">
         <Shortcut Id="StartupShortcut"
                   Name="Win11 Extra Clock"
                   Target="[INSTALLDIR]$(var.AppExeName)"
                   WorkingDirectory="INSTALLDIR" />
-        <RegistryValue Root="HKCU" Key="Software\Win11ExtraClock" Name="startup" Type="integer" Value="1" KeyPath="yes" />
-        
+        <util:RegistryValue Root="HKCU" Key="Software\Win11ExtraClock" Name="startup"
+                            Type="integer" Value="1" KeyPath="yes" />
         <util:RegistryValue Root="HKCU"
                             Key="Software\Microsoft\Windows\CurrentVersion\Run"
                             Name="Win11 Extra Clock"
                             Value="&quot;[INSTALLDIR]$(var.AppExeName)&quot;"
                             Type="string" />
       </Component>
-    </DirectoryRef>
+    </StandardDirectory>
+
+    <?ifdef AppIconPath?>
+      <Icon Id="AppIcon" SourceFile="$(var.AppIconPath)" />
+      <Property Id="ARPPRODUCTICON" Value="AppIcon" />
+    <?endif?>
 
     <Feature Id="MainFeature" Title="Win11 Extra Clock" Level="1">
       <ComponentGroupRef Id="AppFiles" />
