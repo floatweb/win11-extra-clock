@@ -72,24 +72,30 @@ jobs:
       - name: Install WiX 5 (+ v5 extensions)
         shell: pwsh
         run: |
+          # Instalează wix v5.* ca .NET global tool
           dotnet tool install --global wix --version 5.*
           wix --version
-          
-          $versions = @('5.0.2','5.0.1','5.0.0')
 
-          function Add-Ext($id) {
-            $ok=$false
-            foreach($v in $versions){
-              & wix extension add -g $id --version $v
-              if ($LASTEXITCODE -eq 0) { Write-Host "$id $v installed"; $ok=$true; break }
-              else { Write-Host "Failed $id $v, trying next..." }
+          # Extensii necesare
+          $exts = @('WixToolset.UI.wixext','WixToolset.Util.wixext')
+          # Versiuni v5 pe care le încercăm (în ordine)
+          $try = @('5.0.2','5.0.1','5.0.0')
+
+          foreach ($e in $exts) {
+            $ok = $false
+            foreach ($v in $try) {
+              Write-Host ">> Installing $e/$v ..."
+              try {
+                wix extension add -g "$e/$v" 2>$null
+                $ok = $true
+                break
+              } catch { }
             }
-            if (-not $ok) { throw "Could not install $id v5.x (tried: $($versions -join ', '))" }
+            if (-not $ok) { throw "Nu am reușit să instalez $e în versiune v5.x (încercat: $($try -join ', '))." }
           }
 
-          Add-Ext WixToolset.UI.wixext
-          Add-Ext WixToolset.Util.wixext
-          wix extension list
+          # Verificare: ar trebui să vezi extensiile fără (damaged)
+          wix extension list -g
 
       - name: Build MSI (WiX 5)
         shell: pwsh
