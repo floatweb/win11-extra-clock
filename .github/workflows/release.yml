@@ -62,28 +62,9 @@ jobs:
            /DOutDir="${{ github.workspace }}\dist" `
            installer\Win11ExtraClock.iss
 
-
-      - name: Portable zip (optional)
-        shell: pwsh
-        run: |
-          $out = "dist"
-          if (-not (Test-Path $out)) {
-            New-Item -ItemType Directory -Path $out | Out-Null
-          }
-      
-          $zip = Join-Path $out "Win11ExtraClock-x64-${{ steps.v.outputs.NUM }}-portable.zip"
-          if (Test-Path $zip) {
-            Remove-Item $zip -Force
-          }
-      
-          Compress-Archive -Path 'out\publish\*' -DestinationPath $zip -Force
-
       - name: Checksums
         run: |
           certutil -hashfile "dist\Win11ExtraClock-x64-${{ steps.v.outputs.NUM }}-Setup.exe" SHA256 > "dist\Win11ExtraClock-x64-${{ steps.v.outputs.NUM }}-Setup.exe.sha256.txt"
-          if (Test-Path "dist\Win11ExtraClock-x64-${{ steps.v.outputs.NUM }}-portable.zip") {
-            certutil -hashfile "dist\Win11ExtraClock-x64-${{ steps.v.outputs.NUM }}-portable.zip" SHA256 > "dist\Win11ExtraClock-x64-${{ steps.v.outputs.NUM }}-portable.zip.sha256.txt"
-          }
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -106,7 +87,5 @@ jobs:
           files: |
             dist/Win11ExtraClock-x64-*-Setup.exe
             dist/Win11ExtraClock-x64-*-Setup.exe.sha256.txt
-            dist/Win11ExtraClock-x64-*-portable.zip
-            dist/Win11ExtraClock-x64-*-portable.zip.sha256.txt
           draft: false
           generate_release_notes: true
