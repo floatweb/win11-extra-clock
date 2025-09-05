@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
   <Fragment>
-    <Directory Id="PUBLISH_ROOT" Name="." FileSource="out\publish" />
-
-    <ComponentGroup Id="AppFiles" Directory="INSTALLDIR">
-      <Files Include="out\publish\**\*" />
+    <ComponentGroup Id="AppFiles">
+      <Files
+        Directory="INSTALLDIR"
+        Include="out\publish\**\*"
+        SourceRoot="." />
     </ComponentGroup>
   </Fragment>
 </Wix>
