@@ -81,8 +81,8 @@ jobs:
         run: |
           $PubDir  = (Resolve-Path "$PWD\out\publish").Path
           $MsiOut  = "$PWD\dist\Win11ExtraClock-x64-${{ steps.v.outputs.NUM }}.msi"
-          $License = (Resolve-Path "installer\wix\license.rtf").Path
-          $Icon    = (Resolve-Path "installer\wix\win11_extra_clock_icon.ico" -ErrorAction SilentlyContinue)
+          $License = (Resolve-Path "$PWD\installer\wix\license.rtf").Path
+          $Icon    = (Resolve-Path "$PWD\installer\wix\win11_extra_clock_icon.ico" -ErrorAction SilentlyContinue)
           New-Item -ItemType Directory -Force -Path (Split-Path $MsiOut) | Out-Null
           $iconArg = ""
           if ($Icon) { $iconArg = "-define AppIconPath=`"$Icon`"" }
