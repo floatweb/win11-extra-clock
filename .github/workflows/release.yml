@@ -69,15 +69,27 @@ jobs:
           }
           echo "ASM=$asm" >> $env:GITHUB_OUTPUT
 
-      - name: Install WiX 5
+      - name: Install WiX 5 (+ v5 extensions)
         shell: pwsh
         run: |
           dotnet tool install --global wix --version 5.*
           wix --version
-          wix extension add WixToolset.UI.wixext/5.*
-          wix extension add WixToolset.Util.wixext/5.*
+          
+          $versions = @('5.0.2','5.0.1','5.0.0')
+
+          function Add-Ext($id) {
+            $ok=$false
+            foreach($v in $versions){
+              & wix extension add -g $id --version $v
+              if ($LASTEXITCODE -eq 0) { Write-Host "$id $v installed"; $ok=$true; break }
+              else { Write-Host "Failed $id $v, trying next..." }
+            }
+            if (-not $ok) { throw "Could not install $id v5.x (tried: $($versions -join ', '))" }
+          }
+
+          Add-Ext WixToolset.UI.wixext
+          Add-Ext WixToolset.Util.wixext
           wix extension list
-        # https://docs.firegiant.com/wix/tools/wixexe/
 
       - name: Build MSI (WiX 5)
         shell: pwsh
