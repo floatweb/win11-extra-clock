@@ -137,7 +137,7 @@ jobs:
       - name: Generate MSI checksum & upload dist
         shell: pwsh
         run: |
-          $msi = Get-Item "dist\Win11ExtraClock-x64-${{ github.event_name }}.msi"
+          $msi = Get-Item "dist\Win11ExtraClock-x64-${{ github.event.inputs.version }}.msi"
           $hash = (Get-FileHash -Algorithm SHA256 $msi.FullName).Hash
           "$hash  $($msi.Name)" | Out-File -Encoding ASCII "$($msi.FullName).sha256.txt"
       - uses: actions/upload-artifact@v4
@@ -169,8 +169,8 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           token: ${{ github.token }}
-          tag_name: v${{ github.event_name }}
-          name: Win11 Extra Clock ${{ github.event_name }}
+          tag_name: v${{ github.event.inputs.version }}
+          name: Win11 Extra Clock ${{ github.event.inputs.version }}
           generate_release_notes: true
           make_latest: true
           draft: false
