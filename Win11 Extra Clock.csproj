@@ -42,7 +42,6 @@
 	  <None Remove="assets\win11_extra_clock_logo.png" />
 	  <None Remove="assets\win11_extra_clock_logo_02.png" />
 	  <None Remove="assets\win11_extra_clock_logo_round.png" />
-	  <None Remove="installer\assets\license.rtf" />
 	  <None Remove="languages\ar.json" />
 	  <None Remove="languages\bg-BG.json" />
 	  <None Remove="languages\da-DK.json" />
@@ -96,9 +95,6 @@
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
 	  <Content Include="assets\win11_extra_clock_logo_round.png">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </Content>
-	  <Content Include="installer\assets\license.rtf">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
 	  <Content Include="languages\ar.json">
@@ -202,6 +198,7 @@
 	</ItemGroup>
 
 </Project>
+
 
 
 
