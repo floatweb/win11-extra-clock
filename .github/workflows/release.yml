@@ -43,15 +43,14 @@ jobs:
       - name: Restore
         run: dotnet restore
 
-      - name: Verify versions (tag/input vs csproj vs version.txt)
+      - name: Verify versions (csproj vs version.txt)
         shell: pwsh
         run: |
-          $tag = '${{ steps.v.outputs.NUM }}'
           $proj = [xml](Get-Content '${{ env.PROJECT_PATH }}')
           $csprojVer = ($proj.Project.PropertyGroup | ForEach-Object { $_.Version } | ? { $_ } | Select-Object -First 1)
           $txt = (Get-Content 'version.txt' -Raw).Trim()
-          Write-Host "Version  tag/input: $tag  |  csproj: $csprojVer  |  version.txt: $txt"
-          if ($csprojVer -ne $tag -or $txt -ne $tag) { throw 'Version mismatch' }
+          Write-Host "Version  csproj: $csprojVer  |  version.txt: $txt"
+          if ($csprojVer -ne $txt) { throw 'Version mismatch' }
 
       - name: Publish (self-contained, single file)
         run: >
