@@ -18,6 +18,9 @@
   
       <Icon Id="AppIcon" SourceFile="assets\win11_extra_clock_icon.ico" />
       <Property Id="ARPPRODUCTICON" Value="AppIcon" />
+
+      <WixVariable Id="WixUILicenseRtf" Value="installer\wix\license.rtf" />
+      <WixVariable Id="WixUIBannerBmp"  Value="installer\wix\banner-light.bmp" />
   
       <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
       <UIRef Id="WixUI_InstallDir" />
