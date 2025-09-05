@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package>
+  <DisplayName>Win11 Extra Clock</DisplayName>
+  <Description>Windows 11 tray clock enhancements</Description>
+  <Version>@VERSION@</Version>
+  <ReleaseDate>@RELEASE_DATE@</ReleaseDate>
+  <Default>true</Default>
+  <ForcedInstallation>true</ForcedInstallation>
+  <RequiresAdminRights>true</RequiresAdminRights>
+  <Script>installscript.qs</Script>
+</Package>
