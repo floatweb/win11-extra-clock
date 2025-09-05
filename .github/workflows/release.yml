@@ -116,9 +116,9 @@ jobs:
               -ext WixToolset.Util.wixext `
               -define ProductVersion="$Version" `
               -define AppExeName="$Asm.exe" `
+              -define PubDir="$PubDir" `
               -define LicenseRtf="$License" `
               -define AppIconPath="$Icon" `
-              -bindpath Publish="$PubDir" `
               -o "$MsiOut"
           } else {
             wix build installer\wix\Product.wxs installer\wix\Files.wxs `
@@ -127,8 +127,8 @@ jobs:
               -ext WixToolset.Util.wixext `
               -define ProductVersion="$Version" `
               -define AppExeName="$Asm.exe" `
+              -define PubDir="$PubDir" `
               -define LicenseRtf="$License" `
-              -bindpath Publish="$PubDir" `
               -o "$MsiOut"
           }
       
