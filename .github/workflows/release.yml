@@ -69,21 +69,28 @@ jobs:
           Write-Host "Payload staged at: $dataDir"
           Get-ChildItem $dataDir -Recurse | Select-Object FullName,Length | Format-Table -AutoSize
 
-      - name: Install Qt Installer Framework
+      - name: Build installer (QtIFW)
         shell: pwsh
         run: |
-          # 1) încearcă Chocolatey
-          choco install qtifw -y | Out-Host
-          # 2) dacă nu merge, încearcă winget (tace dacă nu e disponibil)
-          if (-not (Get-Command binarycreator -ErrorAction SilentlyContinue)) {
-            try {
-              winget install --id TheQtCompany.QtInstallerFramework -e --silent --accept-package-agreements --accept-source-agreements
-            } catch {}
+          # binarycreator path salvat anterior
+          $bc = Get-Content "$env:RUNNER_TEMP\binarycreator.txt" -Raw
+      
+          $Version = if ("${{ github.event_name }}" -eq "workflow_dispatch") {
+            "${{ github.event.inputs.version }}"
+          } else {
+            "${{ github.ref_name }}".TrimStart('v')
           }
-          # 3) caută binarycreator.exe oriunde în Program Files
-          $bc = Get-ChildItem "C:\Program Files*" -Recurse -Filter binarycreator.exe -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty FullName
-          if (-not $bc) { throw "binarycreator.exe not found (QtIFW). Check install step above." }
-          "$bc" | Out-File -Encoding ASCII -FilePath "$env:RUNNER_TEMP\binarycreator.txt"
+          if ([string]::IsNullOrWhiteSpace($Version)) { throw "Version not determined." }
+      
+          $out = "dist\Win11ExtraClock-x64-$Version-setup.exe"
+          New-Item -ItemType Directory -Force -Path (Split-Path $out) | Out-Null
+      
+          & "$bc" -f `
+            -c "installer\ifw\config\config.build.xml" `
+            -p "installer\ifw\packages" `
+            "$out"
+      
+          Get-Item $out | Select-Object FullName,Length | Format-Table -AutoSize
 
       - name: Templatize IFW config & package metadata
         shell: pwsh
