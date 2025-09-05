@@ -36,7 +36,7 @@ Tray & badge | About
 ## Download & Install 📦
 
 1. Get the **installer** from the [Releases](https://github.com/floatweb/win11-extra-clock/releases) page  
-   (e.g. `Win11ExtraClock-x64-Setup.exe`).
+   (e.g. `Win11ExtraClock-x64-*version*.msi`).
 2. Run the installer and follow the steps.
 3. Optional: keep the icon always visible via  
    **Settings → Personalization → Taskbar → Other system tray icons** → turn **On** for “Win11 Extra Clock”.
@@ -139,7 +139,7 @@ Switching language applies at runtime.
 Build steps:
 1.  Open the solution in Visual Studio → set **Release | x64**.
 2.  Build the solution.
-3.  The installer (e.g. `Win11ExtraClock-x64-Setup.exe`) is the recommended distribution.
+3.  The installer (e.g. `Win11ExtraClock-x64-*version*.msi`) is the recommended distribution.
 
 ---
 
