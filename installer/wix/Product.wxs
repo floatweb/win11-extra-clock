@@ -25,11 +25,6 @@
 
     <StandardDirectory Id="CommonStartupFolder" />
 
-    <?if $(var.AppIconPath) ?>
-      <Icon Id="AppIcon" SourceFile="$(var.AppIconPath)" />
-      <Property Id="ARPPRODUCTICON" Value="AppIcon" />
-    <?endif?>
-
     <DirectoryRef Id="ProgramMenuDir">
       <Component Id="StartMenuShortcut" Guid="*">
         <Shortcut Id="StartMenuShortcut"
