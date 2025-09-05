@@ -17,7 +17,6 @@
 
     <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
     <WixVariable Id="WixUILicenseRtf" Value="installer\wix\license.rtf" />
-    <WixVariable Id="WixUIBannerBmp"  Value="installer\wix\banner-light.bmp" />
     <UIRef Id="WixUI_InstallDir" />
 
     <Directory Id="TARGETDIR" Name="SourceDir">
