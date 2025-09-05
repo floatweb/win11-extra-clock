@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Installer>
+  <Name>Win11 Extra Clock</Name>
+  <Title>Win11 Extra Clock Setup</Title>
+  <Version>@VERSION@</Version>
+  <Publisher>Float Web</Publisher>
+  <StartMenuDir>Win11 Extra Clock</StartMenuDir>
+  <TargetDir>@ApplicationsDir@/Win11 Extra Clock</TargetDir>
+
+  <LicenseFile>installer/assets/license.rtf</LicenseFile>
+  <InstallerApplicationIcon>installer/assets/win11_extra_clock_icon.ico</InstallerApplicationIcon>
+
+  <AllowNonAsciiCharacters>true</AllowNonAsciiCharacters>
+  <WizardStyle>Modern</WizardStyle>
+</Installer>
