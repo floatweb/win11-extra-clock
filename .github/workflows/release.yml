@@ -75,6 +75,7 @@ jobs:
           wix build installer\wix\Product.wxs installer\wix\Files.wxs
           -arch x64
           -ext WixToolset.UI.wixext -ext WixToolset.Util.wixext
+          -dProductVersion="${{ steps.v.outputs.NUM }}" `
           -o dist\Win11ExtraClock-x64-${{ steps.v.outputs.NUM }}.msi
 
       - name: Checksums
