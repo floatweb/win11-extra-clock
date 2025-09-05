@@ -11,7 +11,7 @@
 
     <ui:WixUI Id="WixUI_InstallDir" />
     <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
-    <Variable Id="WixUILicenseRtf" Value="$(var.LicenseRtf)" />
+    <WixVariable Id="WixUILicenseRtf" Value="$(var.LicenseRtf)" />
 
     <MajorUpgrade DowngradeErrorMessage="A newer version of Win11 Extra Clock is already installed." />
 
@@ -23,7 +23,7 @@
       <Directory Id="ProgramMenuDir" Name="Win11 Extra Clock" />
     </StandardDirectory>
 
-    <StandardDirectory Id="CommonStartupFolder" />
+    <StandardDirectory Id="StartupFolder" />
 
     <DirectoryRef Id="ProgramMenuDir">
       <Component Id="StartMenuShortcut" Guid="*">
@@ -32,7 +32,7 @@
                   Target="[INSTALLDIR]$(var.AppExeName)"
                   WorkingDirectory="INSTALLDIR" />
         <RemoveFolder Id="RemovePMDir" Directory="ProgramMenuDir" On="uninstall" />
-        <RegistryValue Root="HKLM" Key="Software\Win11ExtraClock" Name="sm" Type="integer" Value="1" KeyPath="yes" />
+        <RegistryValue Root="HKCU" Key="Software\Win11ExtraClock" Name="sm" Type="integer" Value="1" KeyPath="yes" />
       </Component>
     </DirectoryRef>
 
