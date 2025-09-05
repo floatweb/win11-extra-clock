@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+
+<WixVariable Id="WixUILicenseRtf" Value="installer\wix\license.rtf" />
+<WixVariable Id="WixUIBannerBmp"  Value="installer\wix\banner-light.bmp" />
+
   <Product
     Id="*"
     Name="Win11 Extra Clock"
@@ -14,8 +18,6 @@
 
     <Icon Id="AppIcon" SourceFile="assets\win11_extra_clock_icon.ico" />
     <Property Id="ARPPRODUCTICON" Value="AppIcon" />
-
-    <WixVariable Id="WixUILicenseRtf" Value="installer\wix\license.rtf" />
 
     <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
     <UIRef Id="WixUI_InstallDir" />
