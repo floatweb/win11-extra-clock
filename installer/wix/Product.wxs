@@ -4,7 +4,7 @@
     Id="*"
     Name="Win11 Extra Clock"
     Manufacturer="Float Web"
-    Version="1.0.0"
+    Version="$(var.ProductVersion)"
     Language="1033"
     UpgradeCode="{47B46A15-4BB3-4303-8D2D-A410EC995E37}">
 
@@ -18,11 +18,18 @@
     <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
     <UIRef Id="WixUI_InstallDir" />
 
-    <Feature Id="MainFeature" Title="Win11 Extra Clock" Level="1">
-      <ComponentGroupRef Id="AppFiles" />
-    </Feature>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLDIR" Name="Win11 Extra Clock" />
+      </Directory>
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="AppShortcuts" Name="Win11 Extra Clock" />
+      </Directory>
+      <Directory Id="StartupFolder" />
+    </Directory>
 
     <DirectoryRef Id="INSTALLDIR">
+     
       <Component Id="StartMenuShortcut" Guid="*">
         <Shortcut Id="StartMenuShortcut"
                   Directory="AppShortcuts"
@@ -31,9 +38,10 @@
                   WorkingDirectory="INSTALLDIR"
                   Advertise="no" />
         <RemoveFolder Id="RemoveAppShortcuts" Directory="AppShortcuts" On="uninstall" />
+        
         <RegistryValue Root="HKCU" Key="Software\Win11ExtraClock" Name="sm" Type="integer" Value="1" KeyPath="yes" />
       </Component>
-    
+
       <Component Id="StartupShortcut" Guid="*">
         <Shortcut Id="StartupShortcut"
                   Directory="StartupFolder"
@@ -44,10 +52,11 @@
         <RegistryValue Root="HKCU" Key="Software\Win11ExtraClock" Name="su" Type="integer" Value="1" KeyPath="yes" />
       </Component>
     </DirectoryRef>
-        </File>
-        <RemoveFolder Id="RemoveAppShortcuts" Directory="AppShortcuts" On="uninstall" />
-        <RegistryValue Root="HKCU" Key="Software\Win11ExtraClock" Name="installed" Type="integer" Value="1" KeyPath="yes" />
-      </Component>
-    </DirectoryRef>
+
+    <Feature Id="MainFeature" Title="Win11 Extra Clock" Level="1">
+      <ComponentGroupRef Id="AppFiles" />
+      <ComponentRef Id="StartMenuShortcut" />
+      <ComponentRef Id="StartupShortcut" />
+    </Feature>
   </Product>
 </Wix>
