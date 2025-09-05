@@ -36,13 +36,13 @@
       </Component>
     </DirectoryRef>
 
-    <DirectoryRef Id="CommonStartupFolder">
+    <DirectoryRef Id="StartupFolder">
       <Component Id="StartupShortcut" Guid="*">
         <Shortcut Id="StartupShortcut"
                   Name="Win11 Extra Clock"
                   Target="[INSTALLDIR]$(var.AppExeName)"
                   WorkingDirectory="INSTALLDIR" />
-        <RegistryValue Root="HKLM" Key="Software\Win11ExtraClock" Name="startup" Type="integer" Value="1" KeyPath="yes" />
+        <RegistryValue Root="HKCU" Key="Software\Win11ExtraClock" Name="startup" Type="integer" Value="1" KeyPath="yes" />
       </Component>
     </DirectoryRef>
 
