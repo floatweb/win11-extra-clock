@@ -9,7 +9,6 @@
       Version="$(var.ProductVersion)"
       UpgradeCode="{47B46A15-4BB3-4303-8D2D-A410EC995E37}"
       InstallerVersion="500"
-      ArpIcon="assets\win11_extra_clock_icon.ico"
       Scope="perMachine">
 
     <ui:WixUI Id="WixUI_InstallDir" />
