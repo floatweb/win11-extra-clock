@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
   <Fragment>
-    <ComponentGroup Id="AppFiles">
-      <Files Directory="INSTALLDIR" Include="..\..\out\publish\**\*" />
+    <ComponentGroup Id="AppFiles" Directory="INSTALLDIR">
+      <Component Id="MainExecutable" Guid="*">
+        <File Id="AppExe"
+              Name="Win11 Extra Clock.exe"
+              Source="..\..\out\publish\Win11 Extra Clock.exe"
+              KeyPath="yes" />
+      </Component>
     </ComponentGroup>
   </Fragment>
 </Wix>
