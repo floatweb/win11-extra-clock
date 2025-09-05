@@ -1,10 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
   <Fragment>
-    <DirectoryRef Id="INSTALLDIR" FileSource="!(bindpath.Payload)" />
+
+    <DirectoryRef Id="INSTALLDIR">
+      <Component Id="AppExeComponent" Guid="*">
+        <File Id="AppExeFile"
+              Source="!(bindpath.Payload)\$(var.AppExeName)"
+              KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
 
     <ComponentGroup Id="AppFiles">
-      <Files Directory="INSTALLDIR" Include="**\*" />
+      <ComponentRef Id="AppExeComponent" />
+
+      <Files
+        Directory="INSTALLDIR"
+        Include="!(bindpath.Payload)\**\*"
+        Exclude="!(bindpath.Payload)\$(var.AppExeName)" />
     </ComponentGroup>
+
   </Fragment>
 </Wix>
