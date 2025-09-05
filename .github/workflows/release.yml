@@ -61,46 +61,21 @@ jobs:
           -p:PublishTrimmed=false
           -o out/publish
 
-      - name: Install WiX Toolset
-        run: choco install wixtoolset -y
+      - name: Install WiX 6 CLI
+        run: dotnet tool install --global wix --version 6.*
 
-      - name: Locate WiX tools
-        id: wix
-        shell: pwsh
+      - name: Add WiX extensions
         run: |
-          $root = Get-ChildItem "${env:ProgramFiles(x86)}" -Directory -Filter 'WiX Toolset v3.*' |
-                  Sort-Object Name -Descending | Select-Object -First 1
-          if (-not $root) { throw 'WiX Toolset v3.x not found under Program Files (x86)' }
-          $bin = Join-Path $root.FullName 'bin'
-          "BIN=$bin" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
-          Write-Host "Using WiX from: $bin"
+          wix extension add WixToolset.UI.wixext
+          wix extension add WixToolset.Util.wixext
 
-      - name: Harvest files with Heat
+      - name: Build MSI (WiX 6)
         shell: pwsh
-        run: |
-          & "${{ steps.wix.outputs.BIN }}\heat.exe" dir 'out\publish' `
-            -dr INSTALLDIR `
-            -cg AppFiles `
-            -gg -sfrag -srd -sreg `
-            -platform x64 `
-            -var var.SourceDir `
-            -out installer\wix\Files.wxs
-
-      - name: Build MSI (candle + light)
-        shell: pwsh
-        run: |
-          New-Item -ItemType Directory -Force -Path obj, dist | Out-Null
-          & "${{ steps.wix.outputs.BIN }}\candle.exe" `
-            -arch x64 `
-            -dSourceDir='out\publish' `
-            -dProductVersion='${{ steps.v.outputs.NUM }}' `
-            -out obj\ `
-            installer\wix\Product.wxs installer\wix\Files.wxs
-          & "${{ steps.wix.outputs.BIN }}\light.exe" `
-            -ext WixUIExtension -ext WixUtilExtension `
-            -cultures:en-us `
-            -out "dist\Win11ExtraClock-x64-${{ steps.v.outputs.NUM }}.msi" `
-            obj\Product.wixobj obj\Files.wixobj
+        run: >
+          wix build installer\wix\Product.wxs installer\wix\Files.wxs
+          -arch x64
+          -ext WixToolset.UI.wixext -ext WixToolset.Util.wixext
+          -o dist\Win11ExtraClock-x64-${{ steps.v.outputs.NUM }}.msi
 
       - name: Checksums
         run: |
