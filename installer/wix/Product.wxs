@@ -26,7 +26,7 @@
 
     <StandardDirectory Id="StartupFolder" />
 
-    <?if $(var.AppIconPath) ?>
+    <?ifdef AppIconPath?>
       <Icon Id="AppIcon" SourceFile="$(var.AppIconPath)" />
       <Property Id="ARPPRODUCTICON" Value="AppIcon" />
     <?endif?>
