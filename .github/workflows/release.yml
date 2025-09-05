@@ -54,12 +54,14 @@ jobs:
         run: choco install innosetup -y
 
       - name: Build installer (Inno)
-        run: >
-          "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" /Qp
-          /DMyAppVersion=${{ steps.v.outputs.NUM }}
-          /DSourceDir="${{ github.workspace }}\out\publish"
-          /DOutDir="${{ github.workspace }}\dist"
-          installer\Win11ExtraClock.iss
+        shell: pwsh
+        run: |
+         & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" /Qp `
+           /DMyAppVersion=${{ steps.v.outputs.NUM }} `
+           /DSourceDir="${{ github.workspace }}\out\publish" `
+           /DOutDir="${{ github.workspace }}\dist" `
+           installer\Win11ExtraClock.iss
+
 
       - name: Portable zip (optional)
         run: |
