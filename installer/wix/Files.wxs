@@ -3,7 +3,7 @@
   <Fragment>
     <ComponentGroup Id="AppFiles">
       <!-- <Files Directory="INSTALLDIR" Include="!(bindpath.Publish)\**" /> -->
-      <Files Directory="INSTALLDIR" Include="$(var.PubDir)\**\*" />
+      <Files Directory="INSTALLDIR" Include="installer\payload\**\*" />
     </ComponentGroup>
   </Fragment>
 </Wix>
