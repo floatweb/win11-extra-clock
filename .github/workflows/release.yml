@@ -50,30 +50,6 @@ jobs:
             -p:UseAppHost=true `
             -o out\publish
 
-      - name: List publish output (location + files)
-        shell: pwsh
-        run: |
-          Write-Host "Repo root: $PWD"
-          $p = Resolve-Path "out\publish"
-          Write-Host "Publish folder: $p"
-          if (-not (Test-Path $p)) { throw "Publish folder not found: $p" }
-          Get-ChildItem $p -Recurse | Select-Object FullName,Length | Format-Table -AutoSize
-
-      - name: Detect EXE name from project
-        id: props
-        shell: pwsh
-        run: |
-          $asm = (dotnet msbuild "${{ env.PROJECT_PATH }}" -getProperty:AssemblyName).Trim()
-          if (-not $asm) { $asm = "Win11 Extra Clock" }
-          $exe = Join-Path (Resolve-Path "out\publish") "$asm.exe"
-          if (-not (Test-Path $exe)) {
-            Write-Host "!! EXE not found at expected path: $exe"
-            throw "App EXE not found. Ensure <OutputType>WinExe</OutputType> and <UseAppHost>true</UseAppHost>."
-          }
-          echo "ASM=$asm" >> $env:GITHUB_OUTPUT
-          echo "EXE=$exe" >> $env:GITHUB_OUTPUT
-          Write-Host "EXE detected: $exe"
-
       - name: Install NSIS
         shell: pwsh
         run: |
