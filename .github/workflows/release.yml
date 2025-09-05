@@ -19,77 +19,92 @@ jobs:
       WIX_PATH: 'installer/wix'
 
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Determine version
-        id: v
-        shell: bash
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            if [ -z "${{ github.event.inputs.version }}" ]; then
-              echo "Missing manual input 'version' (e.g. 1.0.0)"; exit 1
-            fi
-            echo "NUM=${{ github.event.inputs.version }}" >> "$GITHUB_OUTPUT"
-          else
-            if [[ "${GITHUB_REF_NAME}" != v* ]]; then
-              echo "Tag must start with 'v' (e.g. v1.0.0). Got: ${GITHUB_REF_NAME}"; exit 1
-            fi
-            echo "NUM=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
-          fi
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
 
-      - name: Restore
-        run: dotnet restore
-
-      - name: Verify versions (csproj vs version.txt)
+      - name: Determine version
+        id: v
         shell: pwsh
         run: |
-          $proj = [xml](Get-Content '${{ env.PROJECT_PATH }}')
-          $csprojVer = ($proj.Project.PropertyGroup | ForEach-Object { $_.Version } | ? { $_ } | Select-Object -First 1)
-          $txt = (Get-Content 'version.txt' -Raw).Trim()
-          Write-Host "Version  csproj: $csprojVer  |  version.txt: $txt"
-          if ($csprojVer -ne $txt) { throw 'Version mismatch' }
+          if ("${{ github.event_name }}" -eq "workflow_dispatch") {
+            $v = "${{ github.event.inputs.version }}"
+          } else {
+            $tag = "${{ github.ref_name }}"        # ex: v1.2.3
+            $v = $tag.TrimStart('v')
+          }
+          if (-not $v) { throw "Version could not be determined." }
+          echo "NUM=$v" >> $env:GITHUB_OUTPUT
+          Write-Host "Version: $v"
 
-      - name: Publish application
-        run: >
-          dotnet publish "${{ env.PROJECT_PATH }}"
-          -c Release -r win-x64 --self-contained true
-          -p:PublishReadyToRun=true
-          -o out/publish
+      - name: Restore & Publish (win-x64, multi-file)
+        shell: pwsh
+        run: |
+          dotnet restore
+          dotnet publish "${{ env.PROJECT_PATH }}" -c Release -r win-x64 `
+            -p:SelfContained=true -p:PublishSingleFile=false -p:PublishTrimmed=false `
+            -o out\publish
 
-      - name: Install WiX 6 CLI
-        run: dotnet tool install --global wix --version 6.*
+      - name: List publish output (location + files)
+        shell: pwsh
+        run: |
+          Write-Host "Repo root: $PWD"
+          $p = Resolve-Path "out\publish"
+          Write-Host "Publish folder: $p"
+          if (-not (Test-Path $p)) { throw "Publish folder not found: $p" }
+          Get-ChildItem $p -Recurse | Select-Object FullName, Length | Format-Table -AutoSize
 
-      - name: Harvest application files (Harvest)
-        run: >
-          wix harvest dir out/publish
-          -gg -g1 -sfrag -srd -sreg -dr INSTALLDIR -cg AppFiles
-          -var var.publishDir
-          -o "${{ env.WIX_PATH }}\Files.wxs"
+      - name: Install WiX 6
+        shell: pwsh
+        run: |
+          dotnet tool install --global wix --version 6.*
+          wix --version
+          wix extension add WixToolset.UI.wixext
+          wix extension add WixToolset.Util.wixext
 
       - name: Build MSI (WiX 6)
         shell: pwsh
-        run: >
-          wix build "${{ env.WIX_PATH }}\Product.wxs" "${{ env.WIX_PATH }}\Files.wxs"
-          -arch x64
-          -ext WixToolset.UI.wixext -ext WixToolset.Util.wixext
-          -d publishDir=out/publish
-          -d ProductVersion="${{ steps.v.outputs.NUM }}"
-          -o dist\Win11ExtraClock-x64-${{ steps.v.outputs.NUM }}.msi
-
-      - name: Checksums
         run: |
-          certutil -hashfile "dist\Win11ExtraClock-x64-${{ steps.v.outputs.NUM }}.msi" SHA256 > "dist\Win11ExtraClock-x64-${{ steps.v.outputs.NUM }}.msi.sha256.txt"
+          $PubDir  = (Resolve-Path "$PWD\out\publish").Path
+          $MsiOut  = "$PWD\dist\Win11ExtraClock-x64-${{ steps.v.outputs.NUM }}.msi"
+          $License = (Resolve-Path "$PWD\installer\assets\license.rtf").Path
+          $Icon    = (Resolve-Path "$PWD\assets\win11_extra_clock_icon.ico" -ErrorAction SilentlyContinue)
+          New-Item -ItemType Directory -Force -Path (Split-Path $MsiOut) | Out-Null
+          $iconArg = ""
+          if ($Icon) { $iconArg = "-define AppIconPath=`"$Icon`"" }
 
-      - name: Upload artifacts
+          wix build $env:WIX_PATH\Product.wxs $env:WIX_PATH\Files.wxs `
+            -arch x64 `
+            -ext WixToolset.UI.wixext `
+            -ext WixToolset.Util.wixext `
+            -define ProductVersion="${{ steps.v.outputs.NUM }}" `
+            -define AppExeName="Win11 Extra Clock.exe" `
+            -define PubDir="$PubDir" `
+            -define LicenseRtf="$License" `
+            $iconArg `
+            -v diagnostic `
+            -o "$MsiOut"
+
+          Write-Host "MSI built at:"
+          Get-Item "$MsiOut" | Select-Object FullName,Length | Format-Table -AutoSize
+
+      - name: Generate checksums
+        shell: pwsh
+        run: |
+          $msi = Get-Item "dist\Win11ExtraClock-x64-${{ steps.v.outputs.NUM }}.msi"
+          $hash = (Get-FileHash -Algorithm SHA256 $msi.FullName).Hash
+          "$hash  $($msi.Name)" | Out-File -Encoding ASCII "$($msi.FullName).sha256.txt"
+          Get-ChildItem dist | Select-Object Name,Length | Format-Table -AutoSize
+
+      - name: Upload dist artifact
         uses: actions/upload-artifact@v4
         with:
           name: dist
-          path: dist\*
+          path: dist/*
 
   release:
     needs: build
