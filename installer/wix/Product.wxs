@@ -20,7 +20,7 @@
     <UIRef Id="WixUI_InstallDir" />
 
     <Directory Id="TARGETDIR" Name="SourceDir">
-      <Directory Id="ProgramFilesFolder">
+      <Directory Id="ProgramFiles64Folder">
         <Directory Id="INSTALLDIR" Name="Win11 Extra Clock" />
       </Directory>
       <Directory Id="ProgramMenuFolder">
