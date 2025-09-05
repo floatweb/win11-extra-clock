@@ -131,7 +131,6 @@ jobs:
               -ext WixToolset.Util.wixext `
               -define ProductVersion="$Version" `
               -define AppExeName="$Asm.exe" `
-              -define PubDir="$PubDir" `
               -define LicenseRtf="$License" `
               -define AppIconPath="$Icon" `
               -o "$MsiOut"
@@ -142,7 +141,6 @@ jobs:
               -ext WixToolset.Util.wixext `
               -define ProductVersion="$Version" `
               -define AppExeName="$Asm.exe" `
-              -define PubDir="$PubDir" `
               -define LicenseRtf="$License" `
               -o "$MsiOut"
           }
