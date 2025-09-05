@@ -12,7 +12,7 @@
       Scope="perMachine">
 
     <ui:WixUI Id="WixUI_InstallDir" />
-    <Variable Id="WixUILicenseRtf" Value="assets\license.rtf" />
+    <ui:WixVariable Id="WixUILicenseRtf" Value="installer\wix\license.rtf"/>
 
     <MajorUpgrade DowngradeErrorMessage="A newer version of Win11 Extra Clock is already installed." />
 
@@ -38,7 +38,7 @@
       </Component>
     </DirectoryRef>
 
-    <DirectoryRef Id="StartupFolder">
+    <StandardDirectory Id="StartupFolder">
       <Component Id="StartupShortcut" Guid="*">
         <Shortcut Id="StartupShortcut"
                   Name="Win11 Extra Clock"
@@ -47,7 +47,7 @@
                   Advertise="no" />
         <RegistryValue Root="HKCU" Key="Software\Win11ExtraClock" Name="su" Type="integer" Value="1" KeyPath="yes" />
       </Component>
-    </DirectoryRef>
+    </StandardDirectory>
 
     <Feature Id="MainFeature" Title="Win11 Extra Clock" Level="1">
       <ComponentGroupRef Id="AppFiles" />
