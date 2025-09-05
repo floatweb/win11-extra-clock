@@ -64,9 +64,9 @@ jobs:
       - name: Install WiX 6 CLI
         run: dotnet tool install --global wix --version 6.*
 
-      - name: Harvest application files (Heat)
+      - name: Harvest application files (Harvest)
         run: >
-          wix heat dir out/publish
+          wix harvest dir out/publish
           -gg -g1 -sfrag -srd -sreg -dr INSTALLDIR -cg AppFiles
           -var var.publishDir
           -o "${{ env.WIX_PATH }}\Files.wxs"
