@@ -8,8 +8,11 @@
 	    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
 	    <UseAppHost>true</UseAppHost>
 	    <SelfContained>true</SelfContained>
-	    <PublishSingleFile>false</PublishSingleFile>
+	    <PublishSingleFile>true</PublishSingleFile>
 	    <PublishTrimmed>false</PublishTrimmed>
+		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+		<EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+		<DebugType>none</DebugType>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
@@ -195,3 +198,4 @@
 	</ItemGroup>
 
 </Project>
+
