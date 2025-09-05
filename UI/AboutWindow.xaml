@@ -174,7 +174,7 @@
             </DockPanel>
 
             <Separator Grid.Row="0" Margin="0,44,0,0" Opacity="0.35"/>
->
+
             <StackPanel Grid.Row="1" Margin="2,12,2,12">
                 <TextBlock x:Name="DescriptionText" TextWrapping="Wrap" Margin="0,0,0,10"
                            d:Text="A small utility that shows a seconds clock and the full long date when you open the Windows 11 calendar. You can also pin it for testing and position it including 'Custom'."/>
@@ -229,4 +229,5 @@
             </Grid>
         </Grid>
     </Border>
+
 </Window>
