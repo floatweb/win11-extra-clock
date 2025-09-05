@@ -4,7 +4,7 @@
     <ComponentGroup Id="AppFiles">
       <Files
         Directory="INSTALLDIR"
-        SourceRoot="$(var.SourceRoot)"
+        SourceRoot="..\..\out\publish"
         Include="**\*" />
     </ComponentGroup>
   </Fragment>
