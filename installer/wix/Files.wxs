@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Fragment>
+    <Directory Id="PUBLISH_ROOT" Name="." FileSource="out\publish" />
+
+    <ComponentGroup Id="AppFiles">
+      <Files Directory="PUBLISH_ROOT" />
+    </ComponentGroup>
+  </Fragment>
+</Wix>
