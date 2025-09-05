@@ -115,6 +115,8 @@ jobs:
           if ([string]::IsNullOrWhiteSpace($Version)) { throw "Version could not be determined." }
       
           $PubDir = (Resolve-Path "$PWD\out\publish").Path
+          $Payload = (Resolve-Path "$PWD\installer\payload").Path
+          
           $Asm    = (dotnet msbuild '${{ env.PROJECT_PATH }}' -getProperty:AssemblyName).Trim()
           if (-not $Asm) { $Asm = 'Win11 Extra Clock' }
       
@@ -123,6 +125,10 @@ jobs:
       
           $MsiOut  = "$PWD\dist\Win11ExtraClock-x64-$Version.msi"
           New-Item -ItemType Directory -Force -Path (Split-Path $MsiOut) | Out-Null
+
+          Write-Host "Payload location: $Payload"
+          Write-Host "License location: $License"
+          Write-Host "Icon location: $Icon"
       
           if ($Icon) {
             wix build installer\wix\Product.wxs installer\wix\Files.wxs `
@@ -133,6 +139,7 @@ jobs:
               -define AppExeName="$Asm.exe" `
               -define LicenseRtf="$License" `
               -define AppIconPath="$Icon" `
+              -bindpath Payload="$Payload" `
               -o "$MsiOut"
           } else {
             wix build installer\wix\Product.wxs installer\wix\Files.wxs `
@@ -142,6 +149,7 @@ jobs:
               -define ProductVersion="$Version" `
               -define AppExeName="$Asm.exe" `
               -define LicenseRtf="$License" `
+              -bindpath Payload="$Payload" `
               -o "$MsiOut"
           }
       
