@@ -65,8 +65,16 @@ jobs:
 
       - name: Portable zip (optional)
         run: |
-          mkdir dist
-          Compress-Archive -Path out\publish\* -DestinationPath dist\Win11ExtraClock-x64-${{ steps.v.outputs.NUM }}-portable.zip
+            run: |
+              $out = "dist"
+              if (-not (Test-Path $out)) {
+                New-Item -ItemType Directory -Path $out | Out-Null
+              }
+          
+              $zip = Join-Path $out "Win11ExtraClock-x64-${{ steps.v.outputs.NUM }}-portable.zip"
+              if (Test-Path $zip) { Remove-Item $zip -Force }
+          
+              Compress-Archive -Path 'out\publish\*' -DestinationPath $zip -Force
 
       - name: Checksums
         run: |
