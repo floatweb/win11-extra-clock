@@ -22,7 +22,6 @@
     <Icon Id="AppIcon" SourceFile="assets\win11_extra_clock_icon.ico"/>
     <Property Id="ARPPRODUCTICON" Value="AppIcon"/>
 
-    <!-- WixUI: dialog set fără CA-uri by default în v6 -->
     <ui:WixUI Id="WixUI_InstallDir" InstallDirectory="INSTALLDIR"/>
 
     <Feature Id="MainFeature" Title="Win11 Extra Clock" Level="1">
@@ -31,7 +30,6 @@
       <ComponentRef Id="StartupShortcut"/>
     </Feature>
 
-    <!-- Directoare țintă x64 -->
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFiles64Folder">
         <Directory Id="INSTALLDIR" Name="Win11 Extra Clock"/>
@@ -42,7 +40,6 @@
       <Directory Id="StartupFolder"/>
     </Directory>
 
-    <!-- Shortcuts -->
     <DirectoryRef Id="INSTALLDIR">
       <Component Id="StartMenuShortcut" Guid="*">
         <Shortcut Id="StartMenuShortcut"
