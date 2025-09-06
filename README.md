@@ -1,6 +1,6 @@
 # Win11 Extra Clock ⏰
 
-[![Latest release](https://img.shields.io/github/v/release/floatweb/win11-extra-clock?logo=github)](https://github.com/floatweb/win11-extra-clock/releases) ![Platform](https://img.shields.io/badge/platform-Windows%2011-0078D4?logo=windows)   ![.NET](https://img.shields.io/badge/.NET-Desktop-512BD4?logo=dotnet) [![License](https://img.shields.io/github/license/floatweb/win11-extra-clock)](LICENSE) [![Downloads](https://img.shields.io/github/downloads/floatweb/win11-extra-clock/total)](https://github.com/floatweb/win11-extra-clock/releases)
+[![Latest release](https://img.shields.io/github/v/release/floatweb/win11-extra-clock?logo=github)](https://github.com/floatweb/win11-extra-clock/releases) ![Platform](https://img.shields.io/badge/platform-Windows%2011-0078D4?logo=windows)   ![.NET](https://img.shields.io/badge/.NET-Desktop-512BD4?logo=dotnet) [![License](https://img.shields.io/github/license/floatweb/win11-extra-clock)](LICENSE) [![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/floatweb/win11-extra-clock/total)](https://github.com/floatweb/win11-extra-clock/releases)
 
 Restore the Windows 10 clock on Windows 11. Open the taskbar calendar and a small flyout shows a **clock with seconds** and the **long date**, using your system locale. Theme-aware, with nine preset positions and a custom drag-to-place mode.
 
