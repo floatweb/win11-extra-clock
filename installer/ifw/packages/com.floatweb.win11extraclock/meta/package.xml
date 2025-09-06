@@ -9,6 +9,6 @@
   <RequiresAdminRights>true</RequiresAdminRights>
   <Script>installscript.qs</Script>
   <Licenses>
-    <License name="End User License Agreement" file="license.rtf"/>
+    <License name="End User License Agreement" file="license.txt"/>
   </Licenses>
 </Package>
