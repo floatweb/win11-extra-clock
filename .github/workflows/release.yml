@@ -107,11 +107,18 @@ jobs:
           $ver = if ("${{ github.event_name }}" -eq "workflow_dispatch") { "${{ github.event.inputs.version }}" } else { "${{ github.ref_name }}".TrimStart('v') }
           if ([string]::IsNullOrWhiteSpace($ver)) { throw "Version not determined." }
           $date = (Get-Date -Format 'yyyy-MM-dd')
-
-          (Get-Content 'installer/ifw/config/config.xml' -Raw).Replace('@VERSION@', $ver) | Set-Content 'installer/ifw/config/config.build.xml' -Encoding UTF8
-          (Get-Content 'installer/ifw/packages/com.floatweb.win11extraclock/meta/package.xml' -Raw).
-            Replace('@VERSION@',$ver).Replace('@RELEASE_DATE@',$date) |
-            Set-Content 'installer/ifw/packages/com.floatweb.win11extraclock/meta/package.build.xml' -Encoding UTF8
+      
+          (Get-Content 'installer/ifw/config/config.xml' -Raw).
+            Replace('@VERSION@', $ver) |
+            Set-Content 'installer/ifw/config/config.build.xml' -Encoding UTF8
+      
+          $meta = 'installer/ifw/packages/com.floatweb.win11extraclock/meta'
+          (Get-Content "$meta/package.xml" -Raw).
+            Replace('@VERSION@', $ver).
+            Replace('@RELEASE_DATE@', $date) |
+            Set-Content "$meta/package.xml" -Encoding UTF8
+      
+          Copy-Item 'installer/assets/license.rtf' "$meta\license.rtf" -Force
 
       - name: Build installer (QtIFW)
         shell: pwsh
