@@ -24,5 +24,10 @@ Component.prototype.createOperations = function() {
         "iconId=0"
     );
 
-    component.addOperation("Delete", startup);
+    component.addOperation(
+      "WriteRegistryValue",
+      "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\Win11 Extra Clock",
+      "\"@TargetDir@\\Win11 Extra Clock.exe\"",
+      "REG_SZ"
+    );
 }
