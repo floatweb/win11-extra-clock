@@ -7,7 +7,6 @@
   <StartMenuDir>Win11 Extra Clock</StartMenuDir>
   <TargetDir>@ApplicationsDir@/Win11 Extra Clock</TargetDir>
 
-  <LicenseFile>installer/assets/license.rtf</LicenseFile>
   <InstallerApplicationIcon>installer/assets/win11_extra_clock_icon.ico</InstallerApplicationIcon>
 
   <AllowNonAsciiCharacters>true</AllowNonAsciiCharacters>
