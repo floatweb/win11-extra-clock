@@ -16,7 +16,6 @@ jobs:
     runs-on: windows-latest
     env:
       PROJECT_PATH: 'Win11 Extra Clock.csproj'
-      NSIS_SCRIPT: 'installer/nsis/installer.nsi'
 
     steps:
       - name: Checkout
