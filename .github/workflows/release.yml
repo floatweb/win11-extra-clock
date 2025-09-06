@@ -74,20 +74,29 @@ jobs:
         run: |
           choco install qt-installer-framework -y --no-progress | Out-Host
       
-          $bc = Get-ChildItem "C:\Program Files*\Qt Installer Framework*\bin\binarycreator.exe" -Recurse -ErrorAction SilentlyContinue |
-                Select-Object -First 1 -ExpandProperty FullName
+          $bc = $null
+          $cmd = Get-Command binarycreator.exe -ErrorAction SilentlyContinue
+          if ($cmd) { $bc = $cmd.Source }
       
+          if (-not $bc) {
+            $bc = Get-ChildItem "C:\Qt\QtIFW-*\bin\binarycreator.exe" -ErrorAction SilentlyContinue |
+                  Select-Object -First 1 -ExpandProperty FullName
+          }
+          if (-not $bc) {
+            $bc = Get-ChildItem "C:\Program Files*\Qt Installer Framework*\bin\binarycreator.exe" -Recurse -ErrorAction SilentlyContinue |
+                  Select-Object -First 1 -ExpandProperty FullName
+          }
           if (-not $bc) {
             python -m pip install --upgrade pip
             python -m pip install aqtinstall
-            $ifwVer = '4.6.1'   # versiune stabilă
+            $ifwVer = '4.7.0'
             python -m aqt tool windows desktop tools_ifw $ifwVer --outputdir "$env:RUNNER_TEMP\Qt"
       
             $bc = Get-ChildItem "$env:RUNNER_TEMP\Qt" -Recurse -Filter binarycreator.exe -ErrorAction SilentlyContinue |
                   Select-Object -First 1 -ExpandProperty FullName
           }
       
-          if (-not $bc) { throw "binarycreator.exe not found after installing QtIFW (via choco or aqtinstall)." }
+          if (-not $bc) { throw "binarycreator.exe not found (QtIFW) after choco/aqtinstall." }
       
           Write-Host "binarycreator: $bc"
           "$bc" | Out-File -Encoding ASCII "$env:RUNNER_TEMP\binarycreator.txt"
