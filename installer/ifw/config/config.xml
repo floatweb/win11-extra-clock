@@ -6,6 +6,8 @@
   <Publisher>Float Web</Publisher>
   <StartMenuDir>Win11 Extra Clock</StartMenuDir>
   <TargetDir>@ApplicationsDir@/Win11 Extra Clock</TargetDir>
+  <RunProgram>@TargetDir@/Win11 Extra Clock.exe</RunProgram>
+  <RunProgramDescription>Launch Win11 Extra Clock now</RunProgramDescription>
 
   <InstallerApplicationIcon>installer/assets/win11_extra_clock_icon.ico</InstallerApplicationIcon>
 
